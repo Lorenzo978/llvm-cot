@@ -21,7 +21,7 @@ make
 Always in `llvm-cot/build` folder:
 ```bash
 export LLVM_DIR=/usr/lib/llvm-16
-$LLVM_DIR/bin/clang -emit-llvm -c ../inputs/test.c -o test.ll
+$LLVM_DIR/bin/clang -O1 -emit-llvm -c ../inputs/test.c -S -o test.ll
 $LLVM_DIR/bin/opt -load-pass-plugin ./lib/libSecret.so --passes="print<inputsVector>" -disable-output test.ll
 ```
 To compile the passes use `make` inside `build` directory.
