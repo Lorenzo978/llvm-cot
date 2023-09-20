@@ -8,8 +8,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/lorenzo/Documents/COT/llvm-tutor/tools/StaticMain.cpp" "tools/CMakeFiles/static.dir/StaticMain.cpp.o" "gcc" "tools/CMakeFiles/static.dir/StaticMain.cpp.o.d"
-  "/home/lorenzo/Documents/COT/llvm-tutor/lib/StaticCallCounter.cpp" "tools/CMakeFiles/static.dir/__/lib/StaticCallCounter.cpp.o" "gcc" "tools/CMakeFiles/static.dir/__/lib/StaticCallCounter.cpp.o.d"
+  "/home/lorenzo/Documents/COT/llvm-cot/tools/StaticMain.cpp" "tools/CMakeFiles/static.dir/StaticMain.cpp.o" "gcc" "tools/CMakeFiles/static.dir/StaticMain.cpp.o.d"
+  "/home/lorenzo/Documents/COT/llvm-cot/lib/StaticCallCounter.cpp" "tools/CMakeFiles/static.dir/__/lib/StaticCallCounter.cpp.o" "gcc" "tools/CMakeFiles/static.dir/__/lib/StaticCallCounter.cpp.o.d"
   )
 
 # Targets to which this target links.

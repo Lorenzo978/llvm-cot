@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/lorenzo/Documents/COT/llvm-tutor
+CMAKE_SOURCE_DIR = /home/lorenzo/Documents/COT/llvm-cot
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/lorenzo/Documents/COT/llvm-tutor/build
+CMAKE_BINARY_DIR = /home/lorenzo/Documents/COT/llvm-cot/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,14 +87,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/lorenzo/Documents/COT/llvm-tutor/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles /home/lorenzo/Documents/COT/llvm-tutor/build/tools//CMakeFiles/progress.marks
-	cd /home/lorenzo/Documents/COT/llvm-tutor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tools/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 0
+	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles /home/lorenzo/Documents/COT/llvm-cot/build/tools//CMakeFiles/progress.marks
+	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tools/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/lorenzo/Documents/COT/llvm-tutor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tools/clean
+	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tools/clean
 .PHONY : clean
 
 # The main clean target
@@ -103,22 +103,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/lorenzo/Documents/COT/llvm-tutor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tools/preinstall
+	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tools/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/lorenzo/Documents/COT/llvm-tutor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tools/preinstall
+	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tools/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/lorenzo/Documents/COT/llvm-tutor/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 tools/CMakeFiles/static.dir/rule:
-	cd /home/lorenzo/Documents/COT/llvm-tutor/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tools/CMakeFiles/static.dir/rule
+	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tools/CMakeFiles/static.dir/rule
 .PHONY : tools/CMakeFiles/static.dir/rule
 
 # Convenience name for target.
@@ -127,7 +127,7 @@ static: tools/CMakeFiles/static.dir/rule
 
 # fast build rule for target.
 static/fast:
-	cd /home/lorenzo/Documents/COT/llvm-tutor/build && $(MAKE) $(MAKESILENT) -f tools/CMakeFiles/static.dir/build.make tools/CMakeFiles/static.dir/build
+	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f tools/CMakeFiles/static.dir/build.make tools/CMakeFiles/static.dir/build
 .PHONY : static/fast
 
 StaticMain.o: StaticMain.cpp.o
@@ -135,7 +135,7 @@ StaticMain.o: StaticMain.cpp.o
 
 # target to build an object file
 StaticMain.cpp.o:
-	cd /home/lorenzo/Documents/COT/llvm-tutor/build && $(MAKE) $(MAKESILENT) -f tools/CMakeFiles/static.dir/build.make tools/CMakeFiles/static.dir/StaticMain.cpp.o
+	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f tools/CMakeFiles/static.dir/build.make tools/CMakeFiles/static.dir/StaticMain.cpp.o
 .PHONY : StaticMain.cpp.o
 
 StaticMain.i: StaticMain.cpp.i
@@ -143,7 +143,7 @@ StaticMain.i: StaticMain.cpp.i
 
 # target to preprocess a source file
 StaticMain.cpp.i:
-	cd /home/lorenzo/Documents/COT/llvm-tutor/build && $(MAKE) $(MAKESILENT) -f tools/CMakeFiles/static.dir/build.make tools/CMakeFiles/static.dir/StaticMain.cpp.i
+	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f tools/CMakeFiles/static.dir/build.make tools/CMakeFiles/static.dir/StaticMain.cpp.i
 .PHONY : StaticMain.cpp.i
 
 StaticMain.s: StaticMain.cpp.s
@@ -151,7 +151,7 @@ StaticMain.s: StaticMain.cpp.s
 
 # target to generate assembly for a file
 StaticMain.cpp.s:
-	cd /home/lorenzo/Documents/COT/llvm-tutor/build && $(MAKE) $(MAKESILENT) -f tools/CMakeFiles/static.dir/build.make tools/CMakeFiles/static.dir/StaticMain.cpp.s
+	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f tools/CMakeFiles/static.dir/build.make tools/CMakeFiles/static.dir/StaticMain.cpp.s
 .PHONY : StaticMain.cpp.s
 
 __/lib/StaticCallCounter.o: __/lib/StaticCallCounter.cpp.o
@@ -159,7 +159,7 @@ __/lib/StaticCallCounter.o: __/lib/StaticCallCounter.cpp.o
 
 # target to build an object file
 __/lib/StaticCallCounter.cpp.o:
-	cd /home/lorenzo/Documents/COT/llvm-tutor/build && $(MAKE) $(MAKESILENT) -f tools/CMakeFiles/static.dir/build.make tools/CMakeFiles/static.dir/__/lib/StaticCallCounter.cpp.o
+	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f tools/CMakeFiles/static.dir/build.make tools/CMakeFiles/static.dir/__/lib/StaticCallCounter.cpp.o
 .PHONY : __/lib/StaticCallCounter.cpp.o
 
 __/lib/StaticCallCounter.i: __/lib/StaticCallCounter.cpp.i
@@ -167,7 +167,7 @@ __/lib/StaticCallCounter.i: __/lib/StaticCallCounter.cpp.i
 
 # target to preprocess a source file
 __/lib/StaticCallCounter.cpp.i:
-	cd /home/lorenzo/Documents/COT/llvm-tutor/build && $(MAKE) $(MAKESILENT) -f tools/CMakeFiles/static.dir/build.make tools/CMakeFiles/static.dir/__/lib/StaticCallCounter.cpp.i
+	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f tools/CMakeFiles/static.dir/build.make tools/CMakeFiles/static.dir/__/lib/StaticCallCounter.cpp.i
 .PHONY : __/lib/StaticCallCounter.cpp.i
 
 __/lib/StaticCallCounter.s: __/lib/StaticCallCounter.cpp.s
@@ -175,7 +175,7 @@ __/lib/StaticCallCounter.s: __/lib/StaticCallCounter.cpp.s
 
 # target to generate assembly for a file
 __/lib/StaticCallCounter.cpp.s:
-	cd /home/lorenzo/Documents/COT/llvm-tutor/build && $(MAKE) $(MAKESILENT) -f tools/CMakeFiles/static.dir/build.make tools/CMakeFiles/static.dir/__/lib/StaticCallCounter.cpp.s
+	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f tools/CMakeFiles/static.dir/build.make tools/CMakeFiles/static.dir/__/lib/StaticCallCounter.cpp.s
 .PHONY : __/lib/StaticCallCounter.cpp.s
 
 # Help Target
@@ -204,6 +204,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/lorenzo/Documents/COT/llvm-tutor/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

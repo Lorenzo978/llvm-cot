@@ -54,10 +54,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/lorenzo/Documents/COT/llvm-tutor
+CMAKE_SOURCE_DIR = /home/lorenzo/Documents/COT/llvm-cot
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/lorenzo/Documents/COT/llvm-tutor/build
+CMAKE_BINARY_DIR = /home/lorenzo/Documents/COT/llvm-cot/build
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -66,14 +66,12 @@ CMAKE_BINARY_DIR = /home/lorenzo/Documents/COT/llvm-tutor/build
 all: lib/all
 all: tools/all
 all: test/all
-all: HelloWorld/all
 .PHONY : all
 
 # The main recursive "preinstall" target.
 preinstall: lib/preinstall
 preinstall: tools/preinstall
 preinstall: test/preinstall
-preinstall: HelloWorld/preinstall
 .PHONY : preinstall
 
 # The main recursive "clean" target.
@@ -84,23 +82,7 @@ clean: CMakeFiles/RISCVTargetParserTableGen.dir/clean
 clean: lib/clean
 clean: tools/clean
 clean: test/clean
-clean: HelloWorld/clean
 .PHONY : clean
-
-#=============================================================================
-# Directory level rules for directory HelloWorld
-
-# Recursive "all" directory target.
-HelloWorld/all: HelloWorld/CMakeFiles/HelloWorld.dir/all
-.PHONY : HelloWorld/all
-
-# Recursive "preinstall" directory target.
-HelloWorld/preinstall:
-.PHONY : HelloWorld/preinstall
-
-# Recursive "clean" directory target.
-HelloWorld/clean: HelloWorld/CMakeFiles/HelloWorld.dir/clean
-.PHONY : HelloWorld/clean
 
 #=============================================================================
 # Directory level rules for directory lib
@@ -176,14 +158,14 @@ tools/clean: tools/CMakeFiles/static.dir/clean
 CMakeFiles/intrinsics_gen.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/intrinsics_gen.dir/build.make CMakeFiles/intrinsics_gen.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/intrinsics_gen.dir/build.make CMakeFiles/intrinsics_gen.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles --progress-num= "Built target intrinsics_gen"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles --progress-num= "Built target intrinsics_gen"
 .PHONY : CMakeFiles/intrinsics_gen.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/intrinsics_gen.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 0
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/intrinsics_gen.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 0
 .PHONY : CMakeFiles/intrinsics_gen.dir/rule
 
 # Convenience name for target.
@@ -202,14 +184,14 @@ CMakeFiles/intrinsics_gen.dir/clean:
 CMakeFiles/omp_gen.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/omp_gen.dir/build.make CMakeFiles/omp_gen.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/omp_gen.dir/build.make CMakeFiles/omp_gen.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles --progress-num= "Built target omp_gen"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles --progress-num= "Built target omp_gen"
 .PHONY : CMakeFiles/omp_gen.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/omp_gen.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 0
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/omp_gen.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 0
 .PHONY : CMakeFiles/omp_gen.dir/rule
 
 # Convenience name for target.
@@ -228,14 +210,14 @@ CMakeFiles/omp_gen.dir/clean:
 CMakeFiles/acc_gen.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/acc_gen.dir/build.make CMakeFiles/acc_gen.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/acc_gen.dir/build.make CMakeFiles/acc_gen.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles --progress-num= "Built target acc_gen"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles --progress-num= "Built target acc_gen"
 .PHONY : CMakeFiles/acc_gen.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/acc_gen.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 0
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/acc_gen.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 0
 .PHONY : CMakeFiles/acc_gen.dir/rule
 
 # Convenience name for target.
@@ -254,14 +236,14 @@ CMakeFiles/acc_gen.dir/clean:
 CMakeFiles/RISCVTargetParserTableGen.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/RISCVTargetParserTableGen.dir/build.make CMakeFiles/RISCVTargetParserTableGen.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/RISCVTargetParserTableGen.dir/build.make CMakeFiles/RISCVTargetParserTableGen.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles --progress-num= "Built target RISCVTargetParserTableGen"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles --progress-num= "Built target RISCVTargetParserTableGen"
 .PHONY : CMakeFiles/RISCVTargetParserTableGen.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/RISCVTargetParserTableGen.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 0
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/RISCVTargetParserTableGen.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 0
 .PHONY : CMakeFiles/RISCVTargetParserTableGen.dir/rule
 
 # Convenience name for target.
@@ -280,14 +262,14 @@ CMakeFiles/RISCVTargetParserTableGen.dir/clean:
 lib/CMakeFiles/StaticCallCounter.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/StaticCallCounter.dir/build.make lib/CMakeFiles/StaticCallCounter.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/StaticCallCounter.dir/build.make lib/CMakeFiles/StaticCallCounter.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles --progress-num=27,28 "Built target StaticCallCounter"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles --progress-num=25,26 "Built target StaticCallCounter"
 .PHONY : lib/CMakeFiles/StaticCallCounter.dir/all
 
 # Build rule for subdir invocation for target.
 lib/CMakeFiles/StaticCallCounter.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/StaticCallCounter.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 0
 .PHONY : lib/CMakeFiles/StaticCallCounter.dir/rule
 
 # Convenience name for target.
@@ -306,14 +288,14 @@ lib/CMakeFiles/StaticCallCounter.dir/clean:
 lib/CMakeFiles/DynamicCallCounter.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/DynamicCallCounter.dir/build.make lib/CMakeFiles/DynamicCallCounter.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/DynamicCallCounter.dir/build.make lib/CMakeFiles/DynamicCallCounter.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles --progress-num=5,6 "Built target DynamicCallCounter"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles --progress-num=5,6 "Built target DynamicCallCounter"
 .PHONY : lib/CMakeFiles/DynamicCallCounter.dir/all
 
 # Build rule for subdir invocation for target.
 lib/CMakeFiles/DynamicCallCounter.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/DynamicCallCounter.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 0
 .PHONY : lib/CMakeFiles/DynamicCallCounter.dir/rule
 
 # Convenience name for target.
@@ -332,14 +314,14 @@ lib/CMakeFiles/DynamicCallCounter.dir/clean:
 lib/CMakeFiles/FindFCmpEq.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/FindFCmpEq.dir/build.make lib/CMakeFiles/FindFCmpEq.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/FindFCmpEq.dir/build.make lib/CMakeFiles/FindFCmpEq.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles --progress-num=7,8 "Built target FindFCmpEq"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles --progress-num=7,8 "Built target FindFCmpEq"
 .PHONY : lib/CMakeFiles/FindFCmpEq.dir/all
 
 # Build rule for subdir invocation for target.
 lib/CMakeFiles/FindFCmpEq.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/FindFCmpEq.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 0
 .PHONY : lib/CMakeFiles/FindFCmpEq.dir/rule
 
 # Convenience name for target.
@@ -358,14 +340,14 @@ lib/CMakeFiles/FindFCmpEq.dir/clean:
 lib/CMakeFiles/ConvertFCmpEq.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/ConvertFCmpEq.dir/build.make lib/CMakeFiles/ConvertFCmpEq.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/ConvertFCmpEq.dir/build.make lib/CMakeFiles/ConvertFCmpEq.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles --progress-num=1,2 "Built target ConvertFCmpEq"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles --progress-num=1,2 "Built target ConvertFCmpEq"
 .PHONY : lib/CMakeFiles/ConvertFCmpEq.dir/all
 
 # Build rule for subdir invocation for target.
 lib/CMakeFiles/ConvertFCmpEq.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/ConvertFCmpEq.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 0
 .PHONY : lib/CMakeFiles/ConvertFCmpEq.dir/rule
 
 # Convenience name for target.
@@ -384,14 +366,14 @@ lib/CMakeFiles/ConvertFCmpEq.dir/clean:
 lib/CMakeFiles/InjectFuncCall.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/InjectFuncCall.dir/build.make lib/CMakeFiles/InjectFuncCall.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/InjectFuncCall.dir/build.make lib/CMakeFiles/InjectFuncCall.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles --progress-num=11,12 "Built target InjectFuncCall"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles --progress-num=9,10 "Built target InjectFuncCall"
 .PHONY : lib/CMakeFiles/InjectFuncCall.dir/all
 
 # Build rule for subdir invocation for target.
 lib/CMakeFiles/InjectFuncCall.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/InjectFuncCall.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 0
 .PHONY : lib/CMakeFiles/InjectFuncCall.dir/rule
 
 # Convenience name for target.
@@ -410,14 +392,14 @@ lib/CMakeFiles/InjectFuncCall.dir/clean:
 lib/CMakeFiles/MBAAdd.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBAAdd.dir/build.make lib/CMakeFiles/MBAAdd.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBAAdd.dir/build.make lib/CMakeFiles/MBAAdd.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles --progress-num=13,14,15 "Built target MBAAdd"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles --progress-num=11,12,13 "Built target MBAAdd"
 .PHONY : lib/CMakeFiles/MBAAdd.dir/all
 
 # Build rule for subdir invocation for target.
 lib/CMakeFiles/MBAAdd.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 3
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/MBAAdd.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 0
 .PHONY : lib/CMakeFiles/MBAAdd.dir/rule
 
 # Convenience name for target.
@@ -436,14 +418,14 @@ lib/CMakeFiles/MBAAdd.dir/clean:
 lib/CMakeFiles/MBASub.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBASub.dir/build.make lib/CMakeFiles/MBASub.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBASub.dir/build.make lib/CMakeFiles/MBASub.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles --progress-num=16,17,18 "Built target MBASub"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles --progress-num=14,15,16 "Built target MBASub"
 .PHONY : lib/CMakeFiles/MBASub.dir/all
 
 # Build rule for subdir invocation for target.
 lib/CMakeFiles/MBASub.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 3
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/MBASub.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 0
 .PHONY : lib/CMakeFiles/MBASub.dir/rule
 
 # Convenience name for target.
@@ -462,14 +444,14 @@ lib/CMakeFiles/MBASub.dir/clean:
 lib/CMakeFiles/RIV.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/RIV.dir/build.make lib/CMakeFiles/RIV.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/RIV.dir/build.make lib/CMakeFiles/RIV.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles --progress-num=23,24 "Built target RIV"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles --progress-num=21,22 "Built target RIV"
 .PHONY : lib/CMakeFiles/RIV.dir/all
 
 # Build rule for subdir invocation for target.
 lib/CMakeFiles/RIV.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/RIV.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 0
 .PHONY : lib/CMakeFiles/RIV.dir/rule
 
 # Convenience name for target.
@@ -488,14 +470,14 @@ lib/CMakeFiles/RIV.dir/clean:
 lib/CMakeFiles/DuplicateBB.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/DuplicateBB.dir/build.make lib/CMakeFiles/DuplicateBB.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/DuplicateBB.dir/build.make lib/CMakeFiles/DuplicateBB.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles --progress-num=3,4 "Built target DuplicateBB"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles --progress-num=3,4 "Built target DuplicateBB"
 .PHONY : lib/CMakeFiles/DuplicateBB.dir/all
 
 # Build rule for subdir invocation for target.
 lib/CMakeFiles/DuplicateBB.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/DuplicateBB.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 0
 .PHONY : lib/CMakeFiles/DuplicateBB.dir/rule
 
 # Convenience name for target.
@@ -514,14 +496,14 @@ lib/CMakeFiles/DuplicateBB.dir/clean:
 lib/CMakeFiles/OpcodeCounter.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/OpcodeCounter.dir/build.make lib/CMakeFiles/OpcodeCounter.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/OpcodeCounter.dir/build.make lib/CMakeFiles/OpcodeCounter.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles --progress-num=21,22 "Built target OpcodeCounter"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles --progress-num=19,20 "Built target OpcodeCounter"
 .PHONY : lib/CMakeFiles/OpcodeCounter.dir/all
 
 # Build rule for subdir invocation for target.
 lib/CMakeFiles/OpcodeCounter.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/OpcodeCounter.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 0
 .PHONY : lib/CMakeFiles/OpcodeCounter.dir/rule
 
 # Convenience name for target.
@@ -540,14 +522,14 @@ lib/CMakeFiles/OpcodeCounter.dir/clean:
 lib/CMakeFiles/MergeBB.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MergeBB.dir/build.make lib/CMakeFiles/MergeBB.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MergeBB.dir/build.make lib/CMakeFiles/MergeBB.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles --progress-num=19,20 "Built target MergeBB"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles --progress-num=17,18 "Built target MergeBB"
 .PHONY : lib/CMakeFiles/MergeBB.dir/all
 
 # Build rule for subdir invocation for target.
 lib/CMakeFiles/MergeBB.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/MergeBB.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 0
 .PHONY : lib/CMakeFiles/MergeBB.dir/rule
 
 # Convenience name for target.
@@ -566,14 +548,14 @@ lib/CMakeFiles/MergeBB.dir/clean:
 lib/CMakeFiles/Secret.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/Secret.dir/build.make lib/CMakeFiles/Secret.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/Secret.dir/build.make lib/CMakeFiles/Secret.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles --progress-num=25,26 "Built target Secret"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles --progress-num=23,24 "Built target Secret"
 .PHONY : lib/CMakeFiles/Secret.dir/all
 
 # Build rule for subdir invocation for target.
 lib/CMakeFiles/Secret.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/Secret.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 0
 .PHONY : lib/CMakeFiles/Secret.dir/rule
 
 # Convenience name for target.
@@ -592,14 +574,14 @@ lib/CMakeFiles/Secret.dir/clean:
 tools/CMakeFiles/static.dir/all:
 	$(MAKE) $(MAKESILENT) -f tools/CMakeFiles/static.dir/build.make tools/CMakeFiles/static.dir/depend
 	$(MAKE) $(MAKESILENT) -f tools/CMakeFiles/static.dir/build.make tools/CMakeFiles/static.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles --progress-num=29,30,31 "Built target static"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles --progress-num=27,28,29 "Built target static"
 .PHONY : tools/CMakeFiles/static.dir/all
 
 # Build rule for subdir invocation for target.
 tools/CMakeFiles/static.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 3
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tools/CMakeFiles/static.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 0
 .PHONY : tools/CMakeFiles/static.dir/rule
 
 # Convenience name for target.
@@ -610,32 +592,6 @@ static: tools/CMakeFiles/static.dir/rule
 tools/CMakeFiles/static.dir/clean:
 	$(MAKE) $(MAKESILENT) -f tools/CMakeFiles/static.dir/build.make tools/CMakeFiles/static.dir/clean
 .PHONY : tools/CMakeFiles/static.dir/clean
-
-#=============================================================================
-# Target rules for target HelloWorld/CMakeFiles/HelloWorld.dir
-
-# All Build rule for target.
-HelloWorld/CMakeFiles/HelloWorld.dir/all:
-	$(MAKE) $(MAKESILENT) -f HelloWorld/CMakeFiles/HelloWorld.dir/build.make HelloWorld/CMakeFiles/HelloWorld.dir/depend
-	$(MAKE) $(MAKESILENT) -f HelloWorld/CMakeFiles/HelloWorld.dir/build.make HelloWorld/CMakeFiles/HelloWorld.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles --progress-num=9,10 "Built target HelloWorld"
-.PHONY : HelloWorld/CMakeFiles/HelloWorld.dir/all
-
-# Build rule for subdir invocation for target.
-HelloWorld/CMakeFiles/HelloWorld.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 2
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 HelloWorld/CMakeFiles/HelloWorld.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles 0
-.PHONY : HelloWorld/CMakeFiles/HelloWorld.dir/rule
-
-# Convenience name for target.
-HelloWorld: HelloWorld/CMakeFiles/HelloWorld.dir/rule
-.PHONY : HelloWorld
-
-# clean rule for target.
-HelloWorld/CMakeFiles/HelloWorld.dir/clean:
-	$(MAKE) $(MAKESILENT) -f HelloWorld/CMakeFiles/HelloWorld.dir/build.make HelloWorld/CMakeFiles/HelloWorld.dir/clean
-.PHONY : HelloWorld/CMakeFiles/HelloWorld.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

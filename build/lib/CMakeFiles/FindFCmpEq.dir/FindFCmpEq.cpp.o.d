@@ -1,7 +1,7 @@
 lib/CMakeFiles/FindFCmpEq.dir/FindFCmpEq.cpp.o: \
- /home/lorenzo/Documents/COT/llvm-tutor/lib/FindFCmpEq.cpp \
+ /home/lorenzo/Documents/COT/llvm-cot/lib/FindFCmpEq.cpp \
  /usr/include/stdc-predef.h \
- /home/lorenzo/Documents/COT/llvm-tutor/lib/../include/FindFCmpEq.h \
+ /home/lorenzo/Documents/COT/llvm-cot/lib/../include/FindFCmpEq.h \
  /usr/include/llvm-16/llvm/IR/PassManager.h \
  /usr/include/llvm-16/llvm/ADT/DenseMap.h \
  /usr/include/llvm-16/llvm/ADT/DenseMapInfo.h /usr/include/c++/11/cassert \

@@ -1,7 +1,7 @@
 tools/CMakeFiles/static.dir/StaticMain.cpp.o: \
- /home/lorenzo/Documents/COT/llvm-tutor/tools/StaticMain.cpp \
+ /home/lorenzo/Documents/COT/llvm-cot/tools/StaticMain.cpp \
  /usr/include/stdc-predef.h \
- /home/lorenzo/Documents/COT/llvm-tutor/tools/../include/StaticCallCounter.h \
+ /home/lorenzo/Documents/COT/llvm-cot/tools/../include/StaticCallCounter.h \
  /usr/include/llvm-16/llvm/ADT/MapVector.h \
  /usr/include/llvm-16/llvm/ADT/DenseMap.h \
  /usr/include/llvm-16/llvm/ADT/DenseMapInfo.h /usr/include/c++/11/cassert \

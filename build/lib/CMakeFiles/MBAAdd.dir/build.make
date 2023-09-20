@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/lorenzo/Documents/COT/llvm-tutor
+CMAKE_SOURCE_DIR = /home/lorenzo/Documents/COT/llvm-cot
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/lorenzo/Documents/COT/llvm-tutor/build
+CMAKE_BINARY_DIR = /home/lorenzo/Documents/COT/llvm-cot/build
 
 # Include any dependencies generated for this target.
 include lib/CMakeFiles/MBAAdd.dir/depend.make
@@ -72,30 +72,30 @@ include lib/CMakeFiles/MBAAdd.dir/flags.make
 lib/CMakeFiles/MBAAdd.dir/MBAAdd.cpp.o: lib/CMakeFiles/MBAAdd.dir/flags.make
 lib/CMakeFiles/MBAAdd.dir/MBAAdd.cpp.o: ../lib/MBAAdd.cpp
 lib/CMakeFiles/MBAAdd.dir/MBAAdd.cpp.o: lib/CMakeFiles/MBAAdd.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object lib/CMakeFiles/MBAAdd.dir/MBAAdd.cpp.o"
-	cd /home/lorenzo/Documents/COT/llvm-tutor/build/lib && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/CMakeFiles/MBAAdd.dir/MBAAdd.cpp.o -MF CMakeFiles/MBAAdd.dir/MBAAdd.cpp.o.d -o CMakeFiles/MBAAdd.dir/MBAAdd.cpp.o -c /home/lorenzo/Documents/COT/llvm-tutor/lib/MBAAdd.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object lib/CMakeFiles/MBAAdd.dir/MBAAdd.cpp.o"
+	cd /home/lorenzo/Documents/COT/llvm-cot/build/lib && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/CMakeFiles/MBAAdd.dir/MBAAdd.cpp.o -MF CMakeFiles/MBAAdd.dir/MBAAdd.cpp.o.d -o CMakeFiles/MBAAdd.dir/MBAAdd.cpp.o -c /home/lorenzo/Documents/COT/llvm-cot/lib/MBAAdd.cpp
 
 lib/CMakeFiles/MBAAdd.dir/MBAAdd.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/MBAAdd.dir/MBAAdd.cpp.i"
-	cd /home/lorenzo/Documents/COT/llvm-tutor/build/lib && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lorenzo/Documents/COT/llvm-tutor/lib/MBAAdd.cpp > CMakeFiles/MBAAdd.dir/MBAAdd.cpp.i
+	cd /home/lorenzo/Documents/COT/llvm-cot/build/lib && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lorenzo/Documents/COT/llvm-cot/lib/MBAAdd.cpp > CMakeFiles/MBAAdd.dir/MBAAdd.cpp.i
 
 lib/CMakeFiles/MBAAdd.dir/MBAAdd.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/MBAAdd.dir/MBAAdd.cpp.s"
-	cd /home/lorenzo/Documents/COT/llvm-tutor/build/lib && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lorenzo/Documents/COT/llvm-tutor/lib/MBAAdd.cpp -o CMakeFiles/MBAAdd.dir/MBAAdd.cpp.s
+	cd /home/lorenzo/Documents/COT/llvm-cot/build/lib && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lorenzo/Documents/COT/llvm-cot/lib/MBAAdd.cpp -o CMakeFiles/MBAAdd.dir/MBAAdd.cpp.s
 
 lib/CMakeFiles/MBAAdd.dir/Ratio.cpp.o: lib/CMakeFiles/MBAAdd.dir/flags.make
 lib/CMakeFiles/MBAAdd.dir/Ratio.cpp.o: ../lib/Ratio.cpp
 lib/CMakeFiles/MBAAdd.dir/Ratio.cpp.o: lib/CMakeFiles/MBAAdd.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object lib/CMakeFiles/MBAAdd.dir/Ratio.cpp.o"
-	cd /home/lorenzo/Documents/COT/llvm-tutor/build/lib && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/CMakeFiles/MBAAdd.dir/Ratio.cpp.o -MF CMakeFiles/MBAAdd.dir/Ratio.cpp.o.d -o CMakeFiles/MBAAdd.dir/Ratio.cpp.o -c /home/lorenzo/Documents/COT/llvm-tutor/lib/Ratio.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object lib/CMakeFiles/MBAAdd.dir/Ratio.cpp.o"
+	cd /home/lorenzo/Documents/COT/llvm-cot/build/lib && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/CMakeFiles/MBAAdd.dir/Ratio.cpp.o -MF CMakeFiles/MBAAdd.dir/Ratio.cpp.o.d -o CMakeFiles/MBAAdd.dir/Ratio.cpp.o -c /home/lorenzo/Documents/COT/llvm-cot/lib/Ratio.cpp
 
 lib/CMakeFiles/MBAAdd.dir/Ratio.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/MBAAdd.dir/Ratio.cpp.i"
-	cd /home/lorenzo/Documents/COT/llvm-tutor/build/lib && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lorenzo/Documents/COT/llvm-tutor/lib/Ratio.cpp > CMakeFiles/MBAAdd.dir/Ratio.cpp.i
+	cd /home/lorenzo/Documents/COT/llvm-cot/build/lib && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lorenzo/Documents/COT/llvm-cot/lib/Ratio.cpp > CMakeFiles/MBAAdd.dir/Ratio.cpp.i
 
 lib/CMakeFiles/MBAAdd.dir/Ratio.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/MBAAdd.dir/Ratio.cpp.s"
-	cd /home/lorenzo/Documents/COT/llvm-tutor/build/lib && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lorenzo/Documents/COT/llvm-tutor/lib/Ratio.cpp -o CMakeFiles/MBAAdd.dir/Ratio.cpp.s
+	cd /home/lorenzo/Documents/COT/llvm-cot/build/lib && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lorenzo/Documents/COT/llvm-cot/lib/Ratio.cpp -o CMakeFiles/MBAAdd.dir/Ratio.cpp.s
 
 # Object files for target MBAAdd
 MBAAdd_OBJECTS = \
@@ -109,18 +109,18 @@ lib/libMBAAdd.so: lib/CMakeFiles/MBAAdd.dir/MBAAdd.cpp.o
 lib/libMBAAdd.so: lib/CMakeFiles/MBAAdd.dir/Ratio.cpp.o
 lib/libMBAAdd.so: lib/CMakeFiles/MBAAdd.dir/build.make
 lib/libMBAAdd.so: lib/CMakeFiles/MBAAdd.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX shared library libMBAAdd.so"
-	cd /home/lorenzo/Documents/COT/llvm-tutor/build/lib && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/MBAAdd.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX shared library libMBAAdd.so"
+	cd /home/lorenzo/Documents/COT/llvm-cot/build/lib && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/MBAAdd.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 lib/CMakeFiles/MBAAdd.dir/build: lib/libMBAAdd.so
 .PHONY : lib/CMakeFiles/MBAAdd.dir/build
 
 lib/CMakeFiles/MBAAdd.dir/clean:
-	cd /home/lorenzo/Documents/COT/llvm-tutor/build/lib && $(CMAKE_COMMAND) -P CMakeFiles/MBAAdd.dir/cmake_clean.cmake
+	cd /home/lorenzo/Documents/COT/llvm-cot/build/lib && $(CMAKE_COMMAND) -P CMakeFiles/MBAAdd.dir/cmake_clean.cmake
 .PHONY : lib/CMakeFiles/MBAAdd.dir/clean
 
 lib/CMakeFiles/MBAAdd.dir/depend:
-	cd /home/lorenzo/Documents/COT/llvm-tutor/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lorenzo/Documents/COT/llvm-tutor /home/lorenzo/Documents/COT/llvm-tutor/lib /home/lorenzo/Documents/COT/llvm-tutor/build /home/lorenzo/Documents/COT/llvm-tutor/build/lib /home/lorenzo/Documents/COT/llvm-tutor/build/lib/CMakeFiles/MBAAdd.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lorenzo/Documents/COT/llvm-cot /home/lorenzo/Documents/COT/llvm-cot/lib /home/lorenzo/Documents/COT/llvm-cot/build /home/lorenzo/Documents/COT/llvm-cot/build/lib /home/lorenzo/Documents/COT/llvm-cot/build/lib/CMakeFiles/MBAAdd.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : lib/CMakeFiles/MBAAdd.dir/depend
 

@@ -1,7 +1,7 @@
 lib/CMakeFiles/DynamicCallCounter.dir/DynamicCallCounter.cpp.o: \
- /home/lorenzo/Documents/COT/llvm-tutor/lib/DynamicCallCounter.cpp \
+ /home/lorenzo/Documents/COT/llvm-cot/lib/DynamicCallCounter.cpp \
  /usr/include/stdc-predef.h \
- /home/lorenzo/Documents/COT/llvm-tutor/lib/../include/DynamicCallCounter.h \
+ /home/lorenzo/Documents/COT/llvm-cot/lib/../include/DynamicCallCounter.h \
  /usr/include/llvm-16/llvm/IR/PassManager.h \
  /usr/include/llvm-16/llvm/ADT/DenseMap.h \
  /usr/include/llvm-16/llvm/ADT/DenseMapInfo.h /usr/include/c++/11/cassert \

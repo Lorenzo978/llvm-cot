@@ -1,4 +1,4 @@
-# Install script for directory: /home/lorenzo/Documents/COT/llvm-tutor/lib
+# Install script for directory: /home/lorenzo/Documents/COT/llvm-cot/lib
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

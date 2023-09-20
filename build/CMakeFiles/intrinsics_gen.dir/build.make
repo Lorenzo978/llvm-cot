@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/lorenzo/Documents/COT/llvm-tutor
+CMAKE_SOURCE_DIR = /home/lorenzo/Documents/COT/llvm-cot
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/lorenzo/Documents/COT/llvm-tutor/build
+CMAKE_BINARY_DIR = /home/lorenzo/Documents/COT/llvm-cot/build
 
 # Utility rule file for intrinsics_gen.
 
@@ -78,6 +78,6 @@ CMakeFiles/intrinsics_gen.dir/clean:
 .PHONY : CMakeFiles/intrinsics_gen.dir/clean
 
 CMakeFiles/intrinsics_gen.dir/depend:
-	cd /home/lorenzo/Documents/COT/llvm-tutor/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lorenzo/Documents/COT/llvm-tutor /home/lorenzo/Documents/COT/llvm-tutor /home/lorenzo/Documents/COT/llvm-tutor/build /home/lorenzo/Documents/COT/llvm-tutor/build /home/lorenzo/Documents/COT/llvm-tutor/build/CMakeFiles/intrinsics_gen.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lorenzo/Documents/COT/llvm-cot /home/lorenzo/Documents/COT/llvm-cot /home/lorenzo/Documents/COT/llvm-cot/build /home/lorenzo/Documents/COT/llvm-cot/build /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles/intrinsics_gen.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/intrinsics_gen.dir/depend
 

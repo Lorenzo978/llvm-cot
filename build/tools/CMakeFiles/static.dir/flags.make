@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/lorenzo/Documents/COT/llvm-tutor/tools/../include -isystem /usr/lib/llvm-16/include
+CXX_INCLUDES = -I/home/lorenzo/Documents/COT/llvm-cot/tools/../include -isystem /usr/lib/llvm-16/include
 
 CXX_FLAGS =  -Wall  -fdiagnostics-color=always -fvisibility-inlines-hidden -g   -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS
 

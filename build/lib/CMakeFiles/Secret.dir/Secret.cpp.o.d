@@ -1,7 +1,7 @@
 lib/CMakeFiles/Secret.dir/Secret.cpp.o: \
- /home/lorenzo/Documents/COT/llvm-tutor/lib/Secret.cpp \
+ /home/lorenzo/Documents/COT/llvm-cot/lib/Secret.cpp \
  /usr/include/stdc-predef.h \
- /home/lorenzo/Documents/COT/llvm-tutor/lib/../include/Secret.h \
+ /home/lorenzo/Documents/COT/llvm-cot/lib/../include/Secret.h \
  /usr/include/llvm-16/llvm/IR/Function.h \
  /usr/include/llvm-16/llvm/ADT/DenseSet.h \
  /usr/include/llvm-16/llvm/ADT/DenseMap.h \

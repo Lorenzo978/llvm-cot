@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/lorenzo/Documents/COT/llvm-tutor/lib/Secret.cpp" "lib/CMakeFiles/Secret.dir/Secret.cpp.o" "gcc" "lib/CMakeFiles/Secret.dir/Secret.cpp.o.d"
+  "/home/lorenzo/Documents/COT/llvm-cot/lib/Secret.cpp" "lib/CMakeFiles/Secret.dir/Secret.cpp.o" "gcc" "lib/CMakeFiles/Secret.dir/Secret.cpp.o.d"
   )
 
 # Targets to which this target links.

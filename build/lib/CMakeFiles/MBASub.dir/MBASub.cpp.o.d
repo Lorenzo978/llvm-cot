@@ -1,7 +1,7 @@
 lib/CMakeFiles/MBASub.dir/MBASub.cpp.o: \
- /home/lorenzo/Documents/COT/llvm-tutor/lib/MBASub.cpp \
+ /home/lorenzo/Documents/COT/llvm-cot/lib/MBASub.cpp \
  /usr/include/stdc-predef.h \
- /home/lorenzo/Documents/COT/llvm-tutor/lib/../include/MBASub.h \
+ /home/lorenzo/Documents/COT/llvm-cot/lib/../include/MBASub.h \
  /usr/include/llvm-16/llvm/IR/PassManager.h \
  /usr/include/llvm-16/llvm/ADT/DenseMap.h \
  /usr/include/llvm-16/llvm/ADT/DenseMapInfo.h /usr/include/c++/11/cassert \

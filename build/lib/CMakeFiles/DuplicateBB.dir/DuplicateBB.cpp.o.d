@@ -1,8 +1,8 @@
 lib/CMakeFiles/DuplicateBB.dir/DuplicateBB.cpp.o: \
- /home/lorenzo/Documents/COT/llvm-tutor/lib/DuplicateBB.cpp \
+ /home/lorenzo/Documents/COT/llvm-cot/lib/DuplicateBB.cpp \
  /usr/include/stdc-predef.h \
- /home/lorenzo/Documents/COT/llvm-tutor/lib/../include/DuplicateBB.h \
- /home/lorenzo/Documents/COT/llvm-tutor/lib/../include/RIV.h \
+ /home/lorenzo/Documents/COT/llvm-cot/lib/../include/DuplicateBB.h \
+ /home/lorenzo/Documents/COT/llvm-cot/lib/../include/RIV.h \
  /usr/include/llvm-16/llvm/ADT/MapVector.h \
  /usr/include/llvm-16/llvm/ADT/DenseMap.h \
  /usr/include/llvm-16/llvm/ADT/DenseMapInfo.h /usr/include/c++/11/cassert \

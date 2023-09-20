@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/lorenzo/Documents/COT/llvm-tutor/lib/MergeBB.cpp" "lib/CMakeFiles/MergeBB.dir/MergeBB.cpp.o" "gcc" "lib/CMakeFiles/MergeBB.dir/MergeBB.cpp.o.d"
+  "/home/lorenzo/Documents/COT/llvm-cot/lib/MergeBB.cpp" "lib/CMakeFiles/MergeBB.dir/MergeBB.cpp.o" "gcc" "lib/CMakeFiles/MergeBB.dir/MergeBB.cpp.o.d"
   )
 
 # Targets to which this target links.
