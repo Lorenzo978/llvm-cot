@@ -6,6 +6,7 @@
 #include "llvm/Transforms/IPO/PassManagerBuilder.h"
 #include "llvm/Support/Casting.h"
 #include <algorithm>
+#include "llvm/IR/IRBuilder.h"
 
 using namespace llvm;
 
@@ -121,47 +122,57 @@ static void printInputsVectorResult(raw_ostream &OutS,
 			{
 				if(cast<BranchInst>(*i).isConditional())
 				{
-					unsigned numSuccessor = cast<BranchInst>(*i).getNumSuccessors();
-					llvm::Instruction* firstBranch = llvm::BranchInst::Create(cast<BranchInst>(*i).getSuccessor(0));
-					llvm::BasicBlock* bbCondition = llvm::BasicBlock::Create(Func.getContext());
-					llvm::BasicBlock* bb1 = llvm::BasicBlock::Create(Func.getContext());
-					llvm::BasicBlock* bb2 = llvm::BasicBlock::Create(Func.getContext());
+				
+					//save references
+					llvm::BasicBlock* Then = cast<BranchInst>(*i).getSuccessor(0);
+					llvm::BasicBlock* Else = cast<BranchInst>(*i).getSuccessor(1);
+					llvm::BasicBlock* End = cast<BranchInst>(*i).getSuccessor(1)->getSingleSuccessor();
 					
-					bbCondition->insertInto(&Func, cast<BranchInst>(*i).getSuccessor(numSuccessor-1)->getSingleSuccessor());
-					llvm::Instruction* conditionBranch = llvm::BranchInst::Create(bb1,bb2,cast<BranchInst>(*i).getCondition());
-					conditionBranch->insertBefore(&(bbCondition->front()));
-
-					bb1->insertInto(&Func, cast<BranchInst>(*i).getSuccessor(numSuccessor-1)->getSingleSuccessor());
-					llvm::Instruction* toEndBranch1 = llvm::BranchInst::Create(cast<BranchInst>(*i).getSuccessor(numSuccessor-1)->getSingleSuccessor()); // Create(8)
-					toEndBranch1->insertBefore(&(bb1->front()));
+					//in the case of a single if: the else part of the branch ist is the end block
+					if(Then->getSingleSuccessor() == Else) End = Else;
 					
-					bb2->insertInto(&Func, cast<BranchInst>(*i).getSuccessor(numSuccessor-1)->getSingleSuccessor());
-					llvm::Instruction* toEndBranch2 = llvm::BranchInst::Create(cast<BranchInst>(*i).getSuccessor(numSuccessor-1)->getSingleSuccessor()); // Create(8)
-					toEndBranch2->insertBefore(&(bb2->front()));
-
-					for(auto &phi : cast<BranchInst>(*i).getSuccessor(numSuccessor-1)->getSingleSuccessor()->phis())
-					{
+					//creation of the new basic blocks
+					llvm::BasicBlock* bbCondition = llvm::BasicBlock::Create(Func.getContext(), "", &Func, End);
+					llvm::BasicBlock* bb1 = llvm::BasicBlock::Create(Func.getContext(), "", &Func, End);
+					llvm::BasicBlock* bb2 = llvm::BasicBlock::Create(Func.getContext(), "", &Func, End);
+					
+					//in case of a if-else: the branch of else must be set to bbCondition 
+					if(Then->getSingleSuccessor() != Else) Else->getTerminator()->setSuccessor(0,bbCondition);
+					
+					//useing of a builder to fix the connections between the new blocks
+					IRBuilder<> builder(bbCondition);
+					builder.SetInsertPoint(bbCondition);
+					builder.CreateCondBr(cast<BranchInst>(*i).getCondition(), bb1, bb2);
+					builder.SetInsertPoint(bb1);
+					builder.CreateBr(End);
+					builder.SetInsertPoint(bb2);
+					builder.CreateBr(End);
+					
+					//fix phi of the end block
+					for(auto &phi : End->phis()) {
+					
 						for(unsigned k=0; k < phi.getNumIncomingValues();k++)
 						{
-								if(phi.getIncomingBlock(k) == cast<BranchInst>(*i).getSuccessor(0))
+								if(phi.getIncomingBlock(k) == Then)
 									phi.setIncomingBlock(k, bb1);
 								
-								if(phi.getIncomingBlock(k) == cast<BranchInst>(*i).getSuccessor(1))
+								if(phi.getIncomingBlock(k) == Else)
 									phi.setIncomingBlock(k, bb2);
+								
+								//in case of a sigle if: the input label is the base block
+								if(phi.getIncomingBlock(k) == cast<Instruction>(*i).getParent())
+									if(k==0) phi.setIncomingBlock(k, bb1);
+									else phi.setIncomingBlock(k, bb2);
 						}
 					}
-
-
-					cast<BranchInst>(*i).getSuccessor(0)->getTerminator()->setSuccessor(0,cast<BranchInst>(*i).getSuccessor(1));
-					cast<BranchInst>(*i).getSuccessor(1)->getTerminator()->setSuccessor(0,bbCondition);
-
+					
+					//fix successors of the original blocks
+					if(Then->getSingleSuccessor() != Else) Then->getTerminator()->setSuccessor(0,Else);
+					else Then->getTerminator()->setSuccessor(0,bbCondition);
+					
+					llvm::Instruction* firstBranch = llvm::BranchInst::Create(cast<BranchInst>(*i).getSuccessor(0));
 					firstBranch->insertAfter(&cast<Instruction>(*i));
 					cast<Instruction>(*i).eraseFromParent();
-					
-
-					//cast<BranchInst>(*i).getSuccessor(numSuccessor-1).getSingleSuccessor()
-
-					//OutS <<   << "\n";
 				}
 			}
 			
