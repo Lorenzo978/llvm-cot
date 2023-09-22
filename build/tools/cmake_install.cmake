@@ -1,4 +1,4 @@
-# Install script for directory: /home/lorenzo/Documents/COT/llvm-cot/tools
+# Install script for directory: /home/pietro/Scrivania/llvm-cot/tools
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

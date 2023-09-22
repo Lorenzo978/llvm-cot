@@ -1,7 +1,6 @@
 lib/CMakeFiles/MBAAdd.dir/Ratio.cpp.o: \
- /home/lorenzo/Documents/COT/llvm-cot/lib/Ratio.cpp \
- /usr/include/stdc-predef.h \
- /home/lorenzo/Documents/COT/llvm-cot/lib/../include/Ratio.h \
+ /home/pietro/Scrivania/llvm-cot/lib/Ratio.cpp /usr/include/stdc-predef.h \
+ /home/pietro/Scrivania/llvm-cot/lib/../include/Ratio.h \
  /usr/include/llvm-16/llvm/Support/CommandLine.h \
  /usr/include/llvm-16/llvm/ADT/ArrayRef.h \
  /usr/include/llvm-16/llvm/ADT/Hashing.h \

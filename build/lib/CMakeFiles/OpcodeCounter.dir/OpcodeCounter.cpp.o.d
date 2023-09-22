@@ -1,7 +1,7 @@
 lib/CMakeFiles/OpcodeCounter.dir/OpcodeCounter.cpp.o: \
- /home/lorenzo/Documents/COT/llvm-cot/lib/OpcodeCounter.cpp \
+ /home/pietro/Scrivania/llvm-cot/lib/OpcodeCounter.cpp \
  /usr/include/stdc-predef.h \
- /home/lorenzo/Documents/COT/llvm-cot/lib/../include/OpcodeCounter.h \
+ /home/pietro/Scrivania/llvm-cot/lib/../include/OpcodeCounter.h \
  /usr/include/llvm-16/llvm/ADT/StringMap.h \
  /usr/include/llvm-16/llvm/ADT/StringMapEntry.h \
  /usr/include/llvm-16/llvm/ADT/StringRef.h \

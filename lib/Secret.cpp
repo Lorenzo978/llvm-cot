@@ -160,9 +160,10 @@ static void printInputsVectorResult(raw_ostream &OutS,
 									phi.setIncomingBlock(k, bb2);
 								
 								//in case of a sigle if: the input label is the base block
-								if(phi.getIncomingBlock(k) == cast<Instruction>(*i).getParent())
+								if(phi.getIncomingBlock(k) == cast<Instruction>(*i).getParent()) {
 									if(k==0) phi.setIncomingBlock(k, bb1);
 									else phi.setIncomingBlock(k, bb2);
+									}
 						}
 					}
 					

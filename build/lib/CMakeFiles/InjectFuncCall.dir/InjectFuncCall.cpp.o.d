@@ -1,7 +1,7 @@
 lib/CMakeFiles/InjectFuncCall.dir/InjectFuncCall.cpp.o: \
- /home/lorenzo/Documents/COT/llvm-cot/lib/InjectFuncCall.cpp \
+ /home/pietro/Scrivania/llvm-cot/lib/InjectFuncCall.cpp \
  /usr/include/stdc-predef.h \
- /home/lorenzo/Documents/COT/llvm-cot/lib/../include/InjectFuncCall.h \
+ /home/pietro/Scrivania/llvm-cot/lib/../include/InjectFuncCall.h \
  /usr/include/llvm-16/llvm/IR/PassManager.h \
  /usr/include/llvm-16/llvm/ADT/DenseMap.h \
  /usr/include/llvm-16/llvm/ADT/DenseMapInfo.h /usr/include/c++/11/cassert \

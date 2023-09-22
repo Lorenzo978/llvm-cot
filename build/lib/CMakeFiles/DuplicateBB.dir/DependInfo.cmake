@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/lorenzo/Documents/COT/llvm-cot/lib/DuplicateBB.cpp" "lib/CMakeFiles/DuplicateBB.dir/DuplicateBB.cpp.o" "gcc" "lib/CMakeFiles/DuplicateBB.dir/DuplicateBB.cpp.o.d"
+  "/home/pietro/Scrivania/llvm-cot/lib/DuplicateBB.cpp" "lib/CMakeFiles/DuplicateBB.dir/DuplicateBB.cpp.o" "gcc" "lib/CMakeFiles/DuplicateBB.dir/DuplicateBB.cpp.o.d"
   )
 
 # Targets to which this target links.

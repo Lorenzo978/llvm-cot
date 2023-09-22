@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/lorenzo/Documents/COT/llvm-cot
+CMAKE_SOURCE_DIR = /home/pietro/Scrivania/llvm-cot
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/lorenzo/Documents/COT/llvm-cot/build
+CMAKE_BINARY_DIR = /home/pietro/Scrivania/llvm-cot/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,14 +87,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles /home/lorenzo/Documents/COT/llvm-cot/build/lib//CMakeFiles/progress.marks
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles 0
+	cd /home/pietro/Scrivania/llvm-cot/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/pietro/Scrivania/llvm-cot/build/CMakeFiles /home/pietro/Scrivania/llvm-cot/build/lib//CMakeFiles/progress.marks
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/pietro/Scrivania/llvm-cot/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/clean
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/clean
 .PHONY : clean
 
 # The main clean target
@@ -103,22 +103,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/preinstall
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/preinstall
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/pietro/Scrivania/llvm-cot/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 lib/CMakeFiles/StaticCallCounter.dir/rule:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/StaticCallCounter.dir/rule
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/StaticCallCounter.dir/rule
 .PHONY : lib/CMakeFiles/StaticCallCounter.dir/rule
 
 # Convenience name for target.
@@ -127,12 +127,12 @@ StaticCallCounter: lib/CMakeFiles/StaticCallCounter.dir/rule
 
 # fast build rule for target.
 StaticCallCounter/fast:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/StaticCallCounter.dir/build.make lib/CMakeFiles/StaticCallCounter.dir/build
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/StaticCallCounter.dir/build.make lib/CMakeFiles/StaticCallCounter.dir/build
 .PHONY : StaticCallCounter/fast
 
 # Convenience name for target.
 lib/CMakeFiles/DynamicCallCounter.dir/rule:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/DynamicCallCounter.dir/rule
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/DynamicCallCounter.dir/rule
 .PHONY : lib/CMakeFiles/DynamicCallCounter.dir/rule
 
 # Convenience name for target.
@@ -141,12 +141,12 @@ DynamicCallCounter: lib/CMakeFiles/DynamicCallCounter.dir/rule
 
 # fast build rule for target.
 DynamicCallCounter/fast:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/DynamicCallCounter.dir/build.make lib/CMakeFiles/DynamicCallCounter.dir/build
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/DynamicCallCounter.dir/build.make lib/CMakeFiles/DynamicCallCounter.dir/build
 .PHONY : DynamicCallCounter/fast
 
 # Convenience name for target.
 lib/CMakeFiles/FindFCmpEq.dir/rule:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/FindFCmpEq.dir/rule
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/FindFCmpEq.dir/rule
 .PHONY : lib/CMakeFiles/FindFCmpEq.dir/rule
 
 # Convenience name for target.
@@ -155,12 +155,12 @@ FindFCmpEq: lib/CMakeFiles/FindFCmpEq.dir/rule
 
 # fast build rule for target.
 FindFCmpEq/fast:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/FindFCmpEq.dir/build.make lib/CMakeFiles/FindFCmpEq.dir/build
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/FindFCmpEq.dir/build.make lib/CMakeFiles/FindFCmpEq.dir/build
 .PHONY : FindFCmpEq/fast
 
 # Convenience name for target.
 lib/CMakeFiles/ConvertFCmpEq.dir/rule:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/ConvertFCmpEq.dir/rule
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/ConvertFCmpEq.dir/rule
 .PHONY : lib/CMakeFiles/ConvertFCmpEq.dir/rule
 
 # Convenience name for target.
@@ -169,12 +169,12 @@ ConvertFCmpEq: lib/CMakeFiles/ConvertFCmpEq.dir/rule
 
 # fast build rule for target.
 ConvertFCmpEq/fast:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/ConvertFCmpEq.dir/build.make lib/CMakeFiles/ConvertFCmpEq.dir/build
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/ConvertFCmpEq.dir/build.make lib/CMakeFiles/ConvertFCmpEq.dir/build
 .PHONY : ConvertFCmpEq/fast
 
 # Convenience name for target.
 lib/CMakeFiles/InjectFuncCall.dir/rule:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/InjectFuncCall.dir/rule
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/InjectFuncCall.dir/rule
 .PHONY : lib/CMakeFiles/InjectFuncCall.dir/rule
 
 # Convenience name for target.
@@ -183,12 +183,12 @@ InjectFuncCall: lib/CMakeFiles/InjectFuncCall.dir/rule
 
 # fast build rule for target.
 InjectFuncCall/fast:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/InjectFuncCall.dir/build.make lib/CMakeFiles/InjectFuncCall.dir/build
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/InjectFuncCall.dir/build.make lib/CMakeFiles/InjectFuncCall.dir/build
 .PHONY : InjectFuncCall/fast
 
 # Convenience name for target.
 lib/CMakeFiles/MBAAdd.dir/rule:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/MBAAdd.dir/rule
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/MBAAdd.dir/rule
 .PHONY : lib/CMakeFiles/MBAAdd.dir/rule
 
 # Convenience name for target.
@@ -197,12 +197,12 @@ MBAAdd: lib/CMakeFiles/MBAAdd.dir/rule
 
 # fast build rule for target.
 MBAAdd/fast:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBAAdd.dir/build.make lib/CMakeFiles/MBAAdd.dir/build
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBAAdd.dir/build.make lib/CMakeFiles/MBAAdd.dir/build
 .PHONY : MBAAdd/fast
 
 # Convenience name for target.
 lib/CMakeFiles/MBASub.dir/rule:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/MBASub.dir/rule
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/MBASub.dir/rule
 .PHONY : lib/CMakeFiles/MBASub.dir/rule
 
 # Convenience name for target.
@@ -211,12 +211,12 @@ MBASub: lib/CMakeFiles/MBASub.dir/rule
 
 # fast build rule for target.
 MBASub/fast:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBASub.dir/build.make lib/CMakeFiles/MBASub.dir/build
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBASub.dir/build.make lib/CMakeFiles/MBASub.dir/build
 .PHONY : MBASub/fast
 
 # Convenience name for target.
 lib/CMakeFiles/RIV.dir/rule:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/RIV.dir/rule
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/RIV.dir/rule
 .PHONY : lib/CMakeFiles/RIV.dir/rule
 
 # Convenience name for target.
@@ -225,12 +225,12 @@ RIV: lib/CMakeFiles/RIV.dir/rule
 
 # fast build rule for target.
 RIV/fast:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/RIV.dir/build.make lib/CMakeFiles/RIV.dir/build
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/RIV.dir/build.make lib/CMakeFiles/RIV.dir/build
 .PHONY : RIV/fast
 
 # Convenience name for target.
 lib/CMakeFiles/DuplicateBB.dir/rule:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/DuplicateBB.dir/rule
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/DuplicateBB.dir/rule
 .PHONY : lib/CMakeFiles/DuplicateBB.dir/rule
 
 # Convenience name for target.
@@ -239,12 +239,12 @@ DuplicateBB: lib/CMakeFiles/DuplicateBB.dir/rule
 
 # fast build rule for target.
 DuplicateBB/fast:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/DuplicateBB.dir/build.make lib/CMakeFiles/DuplicateBB.dir/build
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/DuplicateBB.dir/build.make lib/CMakeFiles/DuplicateBB.dir/build
 .PHONY : DuplicateBB/fast
 
 # Convenience name for target.
 lib/CMakeFiles/OpcodeCounter.dir/rule:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/OpcodeCounter.dir/rule
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/OpcodeCounter.dir/rule
 .PHONY : lib/CMakeFiles/OpcodeCounter.dir/rule
 
 # Convenience name for target.
@@ -253,12 +253,12 @@ OpcodeCounter: lib/CMakeFiles/OpcodeCounter.dir/rule
 
 # fast build rule for target.
 OpcodeCounter/fast:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/OpcodeCounter.dir/build.make lib/CMakeFiles/OpcodeCounter.dir/build
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/OpcodeCounter.dir/build.make lib/CMakeFiles/OpcodeCounter.dir/build
 .PHONY : OpcodeCounter/fast
 
 # Convenience name for target.
 lib/CMakeFiles/MergeBB.dir/rule:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/MergeBB.dir/rule
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/MergeBB.dir/rule
 .PHONY : lib/CMakeFiles/MergeBB.dir/rule
 
 # Convenience name for target.
@@ -267,12 +267,12 @@ MergeBB: lib/CMakeFiles/MergeBB.dir/rule
 
 # fast build rule for target.
 MergeBB/fast:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MergeBB.dir/build.make lib/CMakeFiles/MergeBB.dir/build
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MergeBB.dir/build.make lib/CMakeFiles/MergeBB.dir/build
 .PHONY : MergeBB/fast
 
 # Convenience name for target.
 lib/CMakeFiles/Secret.dir/rule:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/Secret.dir/rule
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/Secret.dir/rule
 .PHONY : lib/CMakeFiles/Secret.dir/rule
 
 # Convenience name for target.
@@ -281,7 +281,7 @@ Secret: lib/CMakeFiles/Secret.dir/rule
 
 # fast build rule for target.
 Secret/fast:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/Secret.dir/build.make lib/CMakeFiles/Secret.dir/build
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/Secret.dir/build.make lib/CMakeFiles/Secret.dir/build
 .PHONY : Secret/fast
 
 ConvertFCmpEq.o: ConvertFCmpEq.cpp.o
@@ -289,7 +289,7 @@ ConvertFCmpEq.o: ConvertFCmpEq.cpp.o
 
 # target to build an object file
 ConvertFCmpEq.cpp.o:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/ConvertFCmpEq.dir/build.make lib/CMakeFiles/ConvertFCmpEq.dir/ConvertFCmpEq.cpp.o
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/ConvertFCmpEq.dir/build.make lib/CMakeFiles/ConvertFCmpEq.dir/ConvertFCmpEq.cpp.o
 .PHONY : ConvertFCmpEq.cpp.o
 
 ConvertFCmpEq.i: ConvertFCmpEq.cpp.i
@@ -297,7 +297,7 @@ ConvertFCmpEq.i: ConvertFCmpEq.cpp.i
 
 # target to preprocess a source file
 ConvertFCmpEq.cpp.i:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/ConvertFCmpEq.dir/build.make lib/CMakeFiles/ConvertFCmpEq.dir/ConvertFCmpEq.cpp.i
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/ConvertFCmpEq.dir/build.make lib/CMakeFiles/ConvertFCmpEq.dir/ConvertFCmpEq.cpp.i
 .PHONY : ConvertFCmpEq.cpp.i
 
 ConvertFCmpEq.s: ConvertFCmpEq.cpp.s
@@ -305,7 +305,7 @@ ConvertFCmpEq.s: ConvertFCmpEq.cpp.s
 
 # target to generate assembly for a file
 ConvertFCmpEq.cpp.s:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/ConvertFCmpEq.dir/build.make lib/CMakeFiles/ConvertFCmpEq.dir/ConvertFCmpEq.cpp.s
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/ConvertFCmpEq.dir/build.make lib/CMakeFiles/ConvertFCmpEq.dir/ConvertFCmpEq.cpp.s
 .PHONY : ConvertFCmpEq.cpp.s
 
 DuplicateBB.o: DuplicateBB.cpp.o
@@ -313,7 +313,7 @@ DuplicateBB.o: DuplicateBB.cpp.o
 
 # target to build an object file
 DuplicateBB.cpp.o:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/DuplicateBB.dir/build.make lib/CMakeFiles/DuplicateBB.dir/DuplicateBB.cpp.o
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/DuplicateBB.dir/build.make lib/CMakeFiles/DuplicateBB.dir/DuplicateBB.cpp.o
 .PHONY : DuplicateBB.cpp.o
 
 DuplicateBB.i: DuplicateBB.cpp.i
@@ -321,7 +321,7 @@ DuplicateBB.i: DuplicateBB.cpp.i
 
 # target to preprocess a source file
 DuplicateBB.cpp.i:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/DuplicateBB.dir/build.make lib/CMakeFiles/DuplicateBB.dir/DuplicateBB.cpp.i
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/DuplicateBB.dir/build.make lib/CMakeFiles/DuplicateBB.dir/DuplicateBB.cpp.i
 .PHONY : DuplicateBB.cpp.i
 
 DuplicateBB.s: DuplicateBB.cpp.s
@@ -329,7 +329,7 @@ DuplicateBB.s: DuplicateBB.cpp.s
 
 # target to generate assembly for a file
 DuplicateBB.cpp.s:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/DuplicateBB.dir/build.make lib/CMakeFiles/DuplicateBB.dir/DuplicateBB.cpp.s
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/DuplicateBB.dir/build.make lib/CMakeFiles/DuplicateBB.dir/DuplicateBB.cpp.s
 .PHONY : DuplicateBB.cpp.s
 
 DynamicCallCounter.o: DynamicCallCounter.cpp.o
@@ -337,7 +337,7 @@ DynamicCallCounter.o: DynamicCallCounter.cpp.o
 
 # target to build an object file
 DynamicCallCounter.cpp.o:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/DynamicCallCounter.dir/build.make lib/CMakeFiles/DynamicCallCounter.dir/DynamicCallCounter.cpp.o
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/DynamicCallCounter.dir/build.make lib/CMakeFiles/DynamicCallCounter.dir/DynamicCallCounter.cpp.o
 .PHONY : DynamicCallCounter.cpp.o
 
 DynamicCallCounter.i: DynamicCallCounter.cpp.i
@@ -345,7 +345,7 @@ DynamicCallCounter.i: DynamicCallCounter.cpp.i
 
 # target to preprocess a source file
 DynamicCallCounter.cpp.i:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/DynamicCallCounter.dir/build.make lib/CMakeFiles/DynamicCallCounter.dir/DynamicCallCounter.cpp.i
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/DynamicCallCounter.dir/build.make lib/CMakeFiles/DynamicCallCounter.dir/DynamicCallCounter.cpp.i
 .PHONY : DynamicCallCounter.cpp.i
 
 DynamicCallCounter.s: DynamicCallCounter.cpp.s
@@ -353,7 +353,7 @@ DynamicCallCounter.s: DynamicCallCounter.cpp.s
 
 # target to generate assembly for a file
 DynamicCallCounter.cpp.s:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/DynamicCallCounter.dir/build.make lib/CMakeFiles/DynamicCallCounter.dir/DynamicCallCounter.cpp.s
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/DynamicCallCounter.dir/build.make lib/CMakeFiles/DynamicCallCounter.dir/DynamicCallCounter.cpp.s
 .PHONY : DynamicCallCounter.cpp.s
 
 FindFCmpEq.o: FindFCmpEq.cpp.o
@@ -361,7 +361,7 @@ FindFCmpEq.o: FindFCmpEq.cpp.o
 
 # target to build an object file
 FindFCmpEq.cpp.o:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/FindFCmpEq.dir/build.make lib/CMakeFiles/FindFCmpEq.dir/FindFCmpEq.cpp.o
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/FindFCmpEq.dir/build.make lib/CMakeFiles/FindFCmpEq.dir/FindFCmpEq.cpp.o
 .PHONY : FindFCmpEq.cpp.o
 
 FindFCmpEq.i: FindFCmpEq.cpp.i
@@ -369,7 +369,7 @@ FindFCmpEq.i: FindFCmpEq.cpp.i
 
 # target to preprocess a source file
 FindFCmpEq.cpp.i:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/FindFCmpEq.dir/build.make lib/CMakeFiles/FindFCmpEq.dir/FindFCmpEq.cpp.i
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/FindFCmpEq.dir/build.make lib/CMakeFiles/FindFCmpEq.dir/FindFCmpEq.cpp.i
 .PHONY : FindFCmpEq.cpp.i
 
 FindFCmpEq.s: FindFCmpEq.cpp.s
@@ -377,7 +377,7 @@ FindFCmpEq.s: FindFCmpEq.cpp.s
 
 # target to generate assembly for a file
 FindFCmpEq.cpp.s:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/FindFCmpEq.dir/build.make lib/CMakeFiles/FindFCmpEq.dir/FindFCmpEq.cpp.s
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/FindFCmpEq.dir/build.make lib/CMakeFiles/FindFCmpEq.dir/FindFCmpEq.cpp.s
 .PHONY : FindFCmpEq.cpp.s
 
 InjectFuncCall.o: InjectFuncCall.cpp.o
@@ -385,7 +385,7 @@ InjectFuncCall.o: InjectFuncCall.cpp.o
 
 # target to build an object file
 InjectFuncCall.cpp.o:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/InjectFuncCall.dir/build.make lib/CMakeFiles/InjectFuncCall.dir/InjectFuncCall.cpp.o
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/InjectFuncCall.dir/build.make lib/CMakeFiles/InjectFuncCall.dir/InjectFuncCall.cpp.o
 .PHONY : InjectFuncCall.cpp.o
 
 InjectFuncCall.i: InjectFuncCall.cpp.i
@@ -393,7 +393,7 @@ InjectFuncCall.i: InjectFuncCall.cpp.i
 
 # target to preprocess a source file
 InjectFuncCall.cpp.i:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/InjectFuncCall.dir/build.make lib/CMakeFiles/InjectFuncCall.dir/InjectFuncCall.cpp.i
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/InjectFuncCall.dir/build.make lib/CMakeFiles/InjectFuncCall.dir/InjectFuncCall.cpp.i
 .PHONY : InjectFuncCall.cpp.i
 
 InjectFuncCall.s: InjectFuncCall.cpp.s
@@ -401,7 +401,7 @@ InjectFuncCall.s: InjectFuncCall.cpp.s
 
 # target to generate assembly for a file
 InjectFuncCall.cpp.s:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/InjectFuncCall.dir/build.make lib/CMakeFiles/InjectFuncCall.dir/InjectFuncCall.cpp.s
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/InjectFuncCall.dir/build.make lib/CMakeFiles/InjectFuncCall.dir/InjectFuncCall.cpp.s
 .PHONY : InjectFuncCall.cpp.s
 
 MBAAdd.o: MBAAdd.cpp.o
@@ -409,7 +409,7 @@ MBAAdd.o: MBAAdd.cpp.o
 
 # target to build an object file
 MBAAdd.cpp.o:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBAAdd.dir/build.make lib/CMakeFiles/MBAAdd.dir/MBAAdd.cpp.o
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBAAdd.dir/build.make lib/CMakeFiles/MBAAdd.dir/MBAAdd.cpp.o
 .PHONY : MBAAdd.cpp.o
 
 MBAAdd.i: MBAAdd.cpp.i
@@ -417,7 +417,7 @@ MBAAdd.i: MBAAdd.cpp.i
 
 # target to preprocess a source file
 MBAAdd.cpp.i:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBAAdd.dir/build.make lib/CMakeFiles/MBAAdd.dir/MBAAdd.cpp.i
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBAAdd.dir/build.make lib/CMakeFiles/MBAAdd.dir/MBAAdd.cpp.i
 .PHONY : MBAAdd.cpp.i
 
 MBAAdd.s: MBAAdd.cpp.s
@@ -425,7 +425,7 @@ MBAAdd.s: MBAAdd.cpp.s
 
 # target to generate assembly for a file
 MBAAdd.cpp.s:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBAAdd.dir/build.make lib/CMakeFiles/MBAAdd.dir/MBAAdd.cpp.s
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBAAdd.dir/build.make lib/CMakeFiles/MBAAdd.dir/MBAAdd.cpp.s
 .PHONY : MBAAdd.cpp.s
 
 MBASub.o: MBASub.cpp.o
@@ -433,7 +433,7 @@ MBASub.o: MBASub.cpp.o
 
 # target to build an object file
 MBASub.cpp.o:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBASub.dir/build.make lib/CMakeFiles/MBASub.dir/MBASub.cpp.o
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBASub.dir/build.make lib/CMakeFiles/MBASub.dir/MBASub.cpp.o
 .PHONY : MBASub.cpp.o
 
 MBASub.i: MBASub.cpp.i
@@ -441,7 +441,7 @@ MBASub.i: MBASub.cpp.i
 
 # target to preprocess a source file
 MBASub.cpp.i:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBASub.dir/build.make lib/CMakeFiles/MBASub.dir/MBASub.cpp.i
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBASub.dir/build.make lib/CMakeFiles/MBASub.dir/MBASub.cpp.i
 .PHONY : MBASub.cpp.i
 
 MBASub.s: MBASub.cpp.s
@@ -449,7 +449,7 @@ MBASub.s: MBASub.cpp.s
 
 # target to generate assembly for a file
 MBASub.cpp.s:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBASub.dir/build.make lib/CMakeFiles/MBASub.dir/MBASub.cpp.s
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBASub.dir/build.make lib/CMakeFiles/MBASub.dir/MBASub.cpp.s
 .PHONY : MBASub.cpp.s
 
 MergeBB.o: MergeBB.cpp.o
@@ -457,7 +457,7 @@ MergeBB.o: MergeBB.cpp.o
 
 # target to build an object file
 MergeBB.cpp.o:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MergeBB.dir/build.make lib/CMakeFiles/MergeBB.dir/MergeBB.cpp.o
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MergeBB.dir/build.make lib/CMakeFiles/MergeBB.dir/MergeBB.cpp.o
 .PHONY : MergeBB.cpp.o
 
 MergeBB.i: MergeBB.cpp.i
@@ -465,7 +465,7 @@ MergeBB.i: MergeBB.cpp.i
 
 # target to preprocess a source file
 MergeBB.cpp.i:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MergeBB.dir/build.make lib/CMakeFiles/MergeBB.dir/MergeBB.cpp.i
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MergeBB.dir/build.make lib/CMakeFiles/MergeBB.dir/MergeBB.cpp.i
 .PHONY : MergeBB.cpp.i
 
 MergeBB.s: MergeBB.cpp.s
@@ -473,7 +473,7 @@ MergeBB.s: MergeBB.cpp.s
 
 # target to generate assembly for a file
 MergeBB.cpp.s:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MergeBB.dir/build.make lib/CMakeFiles/MergeBB.dir/MergeBB.cpp.s
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MergeBB.dir/build.make lib/CMakeFiles/MergeBB.dir/MergeBB.cpp.s
 .PHONY : MergeBB.cpp.s
 
 OpcodeCounter.o: OpcodeCounter.cpp.o
@@ -481,7 +481,7 @@ OpcodeCounter.o: OpcodeCounter.cpp.o
 
 # target to build an object file
 OpcodeCounter.cpp.o:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/OpcodeCounter.dir/build.make lib/CMakeFiles/OpcodeCounter.dir/OpcodeCounter.cpp.o
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/OpcodeCounter.dir/build.make lib/CMakeFiles/OpcodeCounter.dir/OpcodeCounter.cpp.o
 .PHONY : OpcodeCounter.cpp.o
 
 OpcodeCounter.i: OpcodeCounter.cpp.i
@@ -489,7 +489,7 @@ OpcodeCounter.i: OpcodeCounter.cpp.i
 
 # target to preprocess a source file
 OpcodeCounter.cpp.i:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/OpcodeCounter.dir/build.make lib/CMakeFiles/OpcodeCounter.dir/OpcodeCounter.cpp.i
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/OpcodeCounter.dir/build.make lib/CMakeFiles/OpcodeCounter.dir/OpcodeCounter.cpp.i
 .PHONY : OpcodeCounter.cpp.i
 
 OpcodeCounter.s: OpcodeCounter.cpp.s
@@ -497,7 +497,7 @@ OpcodeCounter.s: OpcodeCounter.cpp.s
 
 # target to generate assembly for a file
 OpcodeCounter.cpp.s:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/OpcodeCounter.dir/build.make lib/CMakeFiles/OpcodeCounter.dir/OpcodeCounter.cpp.s
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/OpcodeCounter.dir/build.make lib/CMakeFiles/OpcodeCounter.dir/OpcodeCounter.cpp.s
 .PHONY : OpcodeCounter.cpp.s
 
 RIV.o: RIV.cpp.o
@@ -505,7 +505,7 @@ RIV.o: RIV.cpp.o
 
 # target to build an object file
 RIV.cpp.o:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/RIV.dir/build.make lib/CMakeFiles/RIV.dir/RIV.cpp.o
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/RIV.dir/build.make lib/CMakeFiles/RIV.dir/RIV.cpp.o
 .PHONY : RIV.cpp.o
 
 RIV.i: RIV.cpp.i
@@ -513,7 +513,7 @@ RIV.i: RIV.cpp.i
 
 # target to preprocess a source file
 RIV.cpp.i:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/RIV.dir/build.make lib/CMakeFiles/RIV.dir/RIV.cpp.i
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/RIV.dir/build.make lib/CMakeFiles/RIV.dir/RIV.cpp.i
 .PHONY : RIV.cpp.i
 
 RIV.s: RIV.cpp.s
@@ -521,7 +521,7 @@ RIV.s: RIV.cpp.s
 
 # target to generate assembly for a file
 RIV.cpp.s:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/RIV.dir/build.make lib/CMakeFiles/RIV.dir/RIV.cpp.s
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/RIV.dir/build.make lib/CMakeFiles/RIV.dir/RIV.cpp.s
 .PHONY : RIV.cpp.s
 
 Ratio.o: Ratio.cpp.o
@@ -529,8 +529,8 @@ Ratio.o: Ratio.cpp.o
 
 # target to build an object file
 Ratio.cpp.o:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBAAdd.dir/build.make lib/CMakeFiles/MBAAdd.dir/Ratio.cpp.o
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBASub.dir/build.make lib/CMakeFiles/MBASub.dir/Ratio.cpp.o
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBAAdd.dir/build.make lib/CMakeFiles/MBAAdd.dir/Ratio.cpp.o
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBASub.dir/build.make lib/CMakeFiles/MBASub.dir/Ratio.cpp.o
 .PHONY : Ratio.cpp.o
 
 Ratio.i: Ratio.cpp.i
@@ -538,8 +538,8 @@ Ratio.i: Ratio.cpp.i
 
 # target to preprocess a source file
 Ratio.cpp.i:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBAAdd.dir/build.make lib/CMakeFiles/MBAAdd.dir/Ratio.cpp.i
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBASub.dir/build.make lib/CMakeFiles/MBASub.dir/Ratio.cpp.i
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBAAdd.dir/build.make lib/CMakeFiles/MBAAdd.dir/Ratio.cpp.i
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBASub.dir/build.make lib/CMakeFiles/MBASub.dir/Ratio.cpp.i
 .PHONY : Ratio.cpp.i
 
 Ratio.s: Ratio.cpp.s
@@ -547,8 +547,8 @@ Ratio.s: Ratio.cpp.s
 
 # target to generate assembly for a file
 Ratio.cpp.s:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBAAdd.dir/build.make lib/CMakeFiles/MBAAdd.dir/Ratio.cpp.s
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBASub.dir/build.make lib/CMakeFiles/MBASub.dir/Ratio.cpp.s
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBAAdd.dir/build.make lib/CMakeFiles/MBAAdd.dir/Ratio.cpp.s
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/MBASub.dir/build.make lib/CMakeFiles/MBASub.dir/Ratio.cpp.s
 .PHONY : Ratio.cpp.s
 
 Secret.o: Secret.cpp.o
@@ -556,7 +556,7 @@ Secret.o: Secret.cpp.o
 
 # target to build an object file
 Secret.cpp.o:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/Secret.dir/build.make lib/CMakeFiles/Secret.dir/Secret.cpp.o
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/Secret.dir/build.make lib/CMakeFiles/Secret.dir/Secret.cpp.o
 .PHONY : Secret.cpp.o
 
 Secret.i: Secret.cpp.i
@@ -564,7 +564,7 @@ Secret.i: Secret.cpp.i
 
 # target to preprocess a source file
 Secret.cpp.i:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/Secret.dir/build.make lib/CMakeFiles/Secret.dir/Secret.cpp.i
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/Secret.dir/build.make lib/CMakeFiles/Secret.dir/Secret.cpp.i
 .PHONY : Secret.cpp.i
 
 Secret.s: Secret.cpp.s
@@ -572,7 +572,7 @@ Secret.s: Secret.cpp.s
 
 # target to generate assembly for a file
 Secret.cpp.s:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/Secret.dir/build.make lib/CMakeFiles/Secret.dir/Secret.cpp.s
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/Secret.dir/build.make lib/CMakeFiles/Secret.dir/Secret.cpp.s
 .PHONY : Secret.cpp.s
 
 StaticCallCounter.o: StaticCallCounter.cpp.o
@@ -580,7 +580,7 @@ StaticCallCounter.o: StaticCallCounter.cpp.o
 
 # target to build an object file
 StaticCallCounter.cpp.o:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/StaticCallCounter.dir/build.make lib/CMakeFiles/StaticCallCounter.dir/StaticCallCounter.cpp.o
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/StaticCallCounter.dir/build.make lib/CMakeFiles/StaticCallCounter.dir/StaticCallCounter.cpp.o
 .PHONY : StaticCallCounter.cpp.o
 
 StaticCallCounter.i: StaticCallCounter.cpp.i
@@ -588,7 +588,7 @@ StaticCallCounter.i: StaticCallCounter.cpp.i
 
 # target to preprocess a source file
 StaticCallCounter.cpp.i:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/StaticCallCounter.dir/build.make lib/CMakeFiles/StaticCallCounter.dir/StaticCallCounter.cpp.i
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/StaticCallCounter.dir/build.make lib/CMakeFiles/StaticCallCounter.dir/StaticCallCounter.cpp.i
 .PHONY : StaticCallCounter.cpp.i
 
 StaticCallCounter.s: StaticCallCounter.cpp.s
@@ -596,7 +596,7 @@ StaticCallCounter.s: StaticCallCounter.cpp.s
 
 # target to generate assembly for a file
 StaticCallCounter.cpp.s:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/StaticCallCounter.dir/build.make lib/CMakeFiles/StaticCallCounter.dir/StaticCallCounter.cpp.s
+	cd /home/pietro/Scrivania/llvm-cot/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/StaticCallCounter.dir/build.make lib/CMakeFiles/StaticCallCounter.dir/StaticCallCounter.cpp.s
 .PHONY : StaticCallCounter.cpp.s
 
 # Help Target
@@ -669,6 +669,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/pietro/Scrivania/llvm-cot/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

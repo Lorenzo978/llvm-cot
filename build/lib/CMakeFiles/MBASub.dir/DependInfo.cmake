@@ -8,8 +8,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/lorenzo/Documents/COT/llvm-cot/lib/MBASub.cpp" "lib/CMakeFiles/MBASub.dir/MBASub.cpp.o" "gcc" "lib/CMakeFiles/MBASub.dir/MBASub.cpp.o.d"
-  "/home/lorenzo/Documents/COT/llvm-cot/lib/Ratio.cpp" "lib/CMakeFiles/MBASub.dir/Ratio.cpp.o" "gcc" "lib/CMakeFiles/MBASub.dir/Ratio.cpp.o.d"
+  "/home/pietro/Scrivania/llvm-cot/lib/MBASub.cpp" "lib/CMakeFiles/MBASub.dir/MBASub.cpp.o" "gcc" "lib/CMakeFiles/MBASub.dir/MBASub.cpp.o.d"
+  "/home/pietro/Scrivania/llvm-cot/lib/Ratio.cpp" "lib/CMakeFiles/MBASub.dir/Ratio.cpp.o" "gcc" "lib/CMakeFiles/MBASub.dir/Ratio.cpp.o.d"
   )
 
 # Targets to which this target links.

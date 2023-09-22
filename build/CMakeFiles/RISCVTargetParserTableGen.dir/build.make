@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/lorenzo/Documents/COT/llvm-cot
+CMAKE_SOURCE_DIR = /home/pietro/Scrivania/llvm-cot
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/lorenzo/Documents/COT/llvm-cot/build
+CMAKE_BINARY_DIR = /home/pietro/Scrivania/llvm-cot/build
 
 # Utility rule file for RISCVTargetParserTableGen.
 
@@ -78,6 +78,6 @@ CMakeFiles/RISCVTargetParserTableGen.dir/clean:
 .PHONY : CMakeFiles/RISCVTargetParserTableGen.dir/clean
 
 CMakeFiles/RISCVTargetParserTableGen.dir/depend:
-	cd /home/lorenzo/Documents/COT/llvm-cot/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lorenzo/Documents/COT/llvm-cot /home/lorenzo/Documents/COT/llvm-cot /home/lorenzo/Documents/COT/llvm-cot/build /home/lorenzo/Documents/COT/llvm-cot/build /home/lorenzo/Documents/COT/llvm-cot/build/CMakeFiles/RISCVTargetParserTableGen.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/pietro/Scrivania/llvm-cot/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/pietro/Scrivania/llvm-cot /home/pietro/Scrivania/llvm-cot /home/pietro/Scrivania/llvm-cot/build /home/pietro/Scrivania/llvm-cot/build /home/pietro/Scrivania/llvm-cot/build/CMakeFiles/RISCVTargetParserTableGen.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/RISCVTargetParserTableGen.dir/depend
 
