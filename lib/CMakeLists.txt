@@ -13,6 +13,7 @@ set(LLVM_TUTOR_PLUGINS
     OpcodeCounter
     MergeBB
     Secret
+    SecretNew
     )
 
 set(StaticCallCounter_SOURCES
@@ -41,6 +42,8 @@ set(MergeBB_SOURCES
   MergeBB.cpp)
 set(Secret_SOURCES
   Secret.cpp)
+set(SecretNew_SOURCES
+  SecretNew.cpp)
 
 # CONFIGURE THE PLUGIN LIBRARIES
 # ==============================

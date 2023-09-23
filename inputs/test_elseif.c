@@ -12,7 +12,9 @@ int foo(int a) {
  int res=0;
  if(a>10) {
   	res=a+5;
- 	if(a>11) res=a+8;
+ 	if(a>11) { 
+ 		res=a+8;
+ 	}
  	printf("world");
  		}
  else if(a<5){
