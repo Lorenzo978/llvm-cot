@@ -128,7 +128,7 @@ static void printInputsVectorResult(raw_ostream &OutS,
 	
 		if(&*Bblock != NewEntry) { 
 			for (auto Inst = (*Bblock).begin(); Inst != (*Bblock).end(); ++Inst) {
-				if(! (llvm::BranchInst::classof(&*Inst) || llvm::CmpInst::classof(&*Inst) || llvm::PHINode::classof(&*Inst) || llvm::ReturnInst::classof(&*Inst) || 		llvm::SelectInst::classof(&*Inst))) 
+				if(! (llvm::BranchInst::classof(&*Inst) || llvm::CmpInst::classof(&*Inst) || llvm::PHINode::classof(&*Inst) || llvm::ReturnInst::classof(&*Inst) || 		llvm::SelectInst::classof(&*Inst) || llvm::SwitchInst::classof(&*Inst))) 
 					TempVector.push_back(&*Inst);
 			}
 			
