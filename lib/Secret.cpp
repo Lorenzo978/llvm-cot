@@ -22,18 +22,56 @@ Secret::Result Secret::generateInputVector(llvm::Function &Func) {
       inputsVector.push_back(cast<Value>(arg));
   }
 
-  long unsigned int cur = inputsVector.size(), i=0;
 
+  std::vector<llvm::BasicBlock*> parentsVector;
+  long unsigned int cur, pcur, i, j;
+  
   do {
-    cur = inputsVector.size();
-    llvm::Value* val = inputsVector[i];
-    for(auto istr = val->user_begin(); istr != val->user_end(); ++istr) {
-      if(std::find(inputsVector.begin(),inputsVector.end(),*istr) == inputsVector.end())
-      	inputsVector.push_back(*istr);
-    }
-    i++;
-  } while(inputsVector.size() != cur || i < cur);
-
+  
+  	parentsVector.clear();
+  	cur = inputsVector.size();
+  	i = 0;
+  	
+  	do {
+    		cur = inputsVector.size();
+    		llvm::Value* val = inputsVector[i];
+    		for(auto istr = val->user_begin(); istr != val->user_end(); ++istr) {
+      			if(std::find(inputsVector.begin(),inputsVector.end(),*istr) == inputsVector.end())
+      				inputsVector.push_back(*istr);
+      			if(llvm::BranchInst::classof(*istr) && cast<BranchInst>(*istr)->isConditional()) {
+      					parentsVector.push_back(cast<BranchInst>(*istr)->getSuccessor(0));
+      					parentsVector.push_back(cast<BranchInst>(*istr)->getSuccessor(1));
+      			}
+    		}
+    		i++;
+  	} while(inputsVector.size() != cur || i < cur);
+  	
+  	pcur = parentsVector.size();
+  	j = 0;
+  	
+  	do {
+  		pcur = parentsVector.size();
+  		llvm::BasicBlock* bb = parentsVector[j];
+  		for(auto inst = bb->begin(); inst != bb->end(); ++inst) {
+  	
+  			if(/*assegna un valore ad una variabile*/true) inputsVector.push_back(&*inst);
+  			else {
+  				if(llvm::BranchInst::classof(&*inst) && cast<BranchInst>(*inst).isConditional()) {
+  		
+  					if(std::find(inputsVector.begin(),inputsVector.end(),&*inst) == inputsVector.end()) {
+  			
+  						if(std::find(parentsVector.begin(),parentsVector.end(),cast<BranchInst>(*inst).getSuccessor(0)) == parentsVector.end()) parentsVector.push_back(cast<BranchInst>(*inst).getSuccessor(0));
+  				
+  						if(std::find(parentsVector.begin(),parentsVector.end(),cast<BranchInst>(*inst).getSuccessor(1)) == parentsVector.end()) parentsVector.push_back(cast<BranchInst>(*inst).getSuccessor(1));
+  					}	
+  				}	
+  			}
+  		}
+  		j++;
+  	} while(parentsVector.size() != pcur || j < pcur);
+  
+  } while(inputsVector.size() != cur);
+  
   return inputsVector;
 }
 
