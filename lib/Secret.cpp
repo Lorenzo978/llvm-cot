@@ -7,6 +7,9 @@
 #include "llvm/Support/Casting.h"
 #include <algorithm>
 #include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/Dominators.h"
+#include "llvm/Analysis/LoopInfo.h"
+#include <map>
 
 using namespace llvm;
 
@@ -36,15 +39,21 @@ Secret::Result Secret::generateInputVector(llvm::Function &Func) {
     		cur = inputsVector.size();
     		llvm::Value* val = inputsVector[i];
     		for(auto istr = val->user_begin(); istr != val->user_end(); ++istr) {
-      			if(std::find(inputsVector.begin(),inputsVector.end(),*istr) == inputsVector.end())
+      			if(std::find(inputsVector.begin(),inputsVector.end(),*istr) == inputsVector.end()) {
       				inputsVector.push_back(*istr);
-      			if(llvm::BranchInst::classof(*istr) && cast<BranchInst>(*istr)->isConditional()) {
-      					parentsVector.push_back(cast<BranchInst>(*istr)->getSuccessor(0));
-      					parentsVector.push_back(cast<BranchInst>(*istr)->getSuccessor(1));
+      				if(llvm::BranchInst::classof(*istr) && cast<BranchInst>(*istr)->isConditional()) {
+      					llvm::BasicBlock* bb1 = cast<BranchInst>(*istr)->getSuccessor(0);
+      					llvm::BasicBlock* bb2 = cast<BranchInst>(*istr)->getSuccessor(1);
+      					if(std::find(parentsVector.begin(), parentsVector.end(), bb1) == parentsVector.end()) 
+      						parentsVector.push_back(cast<BranchInst>(*istr)->getSuccessor(0));
+      					if(std::find(parentsVector.begin(), parentsVector.end(), bb2) == parentsVector.end()) 
+      						parentsVector.push_back(cast<BranchInst>(*istr)->getSuccessor(1));
+      				}
       			}
     		}
     		i++;
   	} while(inputsVector.size() != cur || i < cur);
+  	
   	
   	pcur = parentsVector.size();
   	j = 0;
@@ -54,7 +63,7 @@ Secret::Result Secret::generateInputVector(llvm::Function &Func) {
   		llvm::BasicBlock* bb = parentsVector[j];
   		for(auto inst = bb->begin(); inst != bb->end(); ++inst) {
   	
-  			if(/*assegna un valore ad una variabile*/true) inputsVector.push_back(&*inst);
+  			if(!((&*inst)->getType()->isVoidTy()) && std::find(inputsVector.begin(),inputsVector.end(),&*inst) == inputsVector.end()) inputsVector.push_back(&*inst);
   			else {
   				if(llvm::BranchInst::classof(&*inst) && cast<BranchInst>(*inst).isConditional()) {
   		
@@ -69,6 +78,7 @@ Secret::Result Secret::generateInputVector(llvm::Function &Func) {
   		}
   		j++;
   	} while(parentsVector.size() != pcur || j < pcur);
+  	
   
   } while(inputsVector.size() != cur);
   
@@ -85,20 +95,6 @@ PreservedAnalyses InputsVectorPrinter::run(Function &Func, FunctionAnalysisManag
 
   OS << "Printing analysis 'Secret Pass' for function '"
      << Func.getName() << "':\n";
-
-	/*for(auto BB = Func->begin(); BB != Func->end(); ++BB)
-	{
-		for(auto Inst = BB->begin(); Inst != BB->end(); ++Inst)
-		{
-			if(Inst->isConditional())
-			{
-				if(std::find(inputsVector.begin(),inputsVector.end(),cast<Value>(Istr)) == inputsVector.end())
-				{
-					
-				}
-			}
-		} 
-	}*/
 
   printInputsVectorResult(OS, inputsVector, Func);
   return PreservedAnalyses::all();
@@ -152,9 +148,65 @@ static void printInputsVectorResult(raw_ostream &OutS,
   for (auto i : InputVector)
     OutS << *i << "\n";
   OutS << "-------------------------------------------------\n";
+  
+  //llvm::DominatorTree DT (Func);
+  //llvm::LoopInfo LI (DT);
+  
+  std::map<llvm::BasicBlock*, llvm::BasicBlock*> bbsMap;
+  
+  llvm::BasicBlock* last = &(Func.back());
+  
+  std::vector<llvm::BasicBlock*> tempVector;
+ 
+  for(auto bb = Func.begin(); bb != Func.end(); ++bb) {
+  	tempVector.push_back(&*bb);
+  }
+  
+  for(auto bb : tempVector) bbsMap.insert(std::make_pair(bb, llvm::BasicBlock::Create(Func.getContext(), "", &Func)));
+  
+  IRBuilder<> builder (bbsMap.begin()->second);
+  
+  for(auto pair = bbsMap.begin(); pair != bbsMap.end(); ++pair) {
+  
+  	builder.SetInsertPoint(pair->second);
+  	
+  	for(auto inst = pair->first->begin(); inst != pair->first->end(); ++inst) {
+  		if(llvm::BranchInst::classof(&*inst)) {
+  			if(cast<BranchInst>(&*inst)->isConditional()) {
+  				llvm::BranchInst* br = cast<BranchInst>(&*inst);
+  				auto bb1 = bbsMap.find(br->getSuccessor(0));
+  				auto bb2 = bbsMap.find(br->getSuccessor(1));
+  				builder.CreateCondBr(br->getCondition(), bb1->second, bb2->second);
+  			}
+  			else {
+  				llvm::BranchInst* br = cast<BranchInst>(&*inst);
+  				auto bb3 = bbsMap.find(br->getSuccessor(0));
+  				builder.CreateBr(bb3->second);
+  			}
+  		}
+  		else if(llvm::PHINode::classof(&*inst)) {
+  			llvm::PHINode* phi = cast<PHINode>(&*inst);
+  			llvm::PHINode* pnew =  builder.CreatePHI(phi->getType(), phi->getNumIncomingValues());
+  			
+  			for(unsigned i = 0; i < phi->getNumIncomingValues(); i++) {
+  				auto bbPhi = bbsMap.find(phi->getIncomingBlock(i));
+  				pnew->addIncoming(phi->getIncomingValue(i),  bbPhi->second);
+  			}
+  		}
+  		else if(llvm::ReturnInst::classof(&*inst))
+  			builder.CreateRet(cast<ReturnInst>(&*inst)->getReturnValue());
+  	}
+  }
+  
+  
+
+  
+}
 
 
-	for (auto i : InputVector)
+
+
+/*for (auto i : InputVector)
 	{
 			if(llvm::BranchInst::classof(i))
 			{
@@ -215,7 +267,5 @@ static void printInputsVectorResult(raw_ostream &OutS,
 				}
 			}
 			
-	}
+	}*/
 
-  
-}
