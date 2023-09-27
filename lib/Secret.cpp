@@ -26,7 +26,7 @@ Secret::Result Secret::generateInputVector(llvm::Function &Func) {
   }
 
 
-  std::vector<llvm::BasicBlock*> parentsVector;
+  /*std::vector<llvm::BasicBlock*> parentsVector;
   long unsigned int cur, pcur, i, j;
   
   do {
@@ -80,7 +80,7 @@ Secret::Result Secret::generateInputVector(llvm::Function &Func) {
   	} while(parentsVector.size() != pcur || j < pcur);
   	
   
-  } while(inputsVector.size() != cur);
+  } while(inputsVector.size() != cur);*/
   
   return inputsVector;
 }
@@ -149,12 +149,10 @@ static void printInputsVectorResult(raw_ostream &OutS,
     OutS << *i << "\n";
   OutS << "-------------------------------------------------\n";
   
-  //llvm::DominatorTree DT (Func);
-  //llvm::LoopInfo LI (DT);
+  llvm::DominatorTree DT (Func);
+  llvm::LoopInfo LI (DT);
   
   std::map<llvm::BasicBlock*, llvm::BasicBlock*> bbsMap;
-  
-  llvm::BasicBlock* last = &(Func.back());
   
   std::vector<llvm::BasicBlock*> tempVector;
  
@@ -192,10 +190,51 @@ static void printInputsVectorResult(raw_ostream &OutS,
   				auto bbPhi = bbsMap.find(phi->getIncomingBlock(i));
   				pnew->addIncoming(phi->getIncomingValue(i),  bbPhi->second);
   			}
+  			
+  			phi->replaceAllUsesWith(pnew);
   		}
   		else if(llvm::ReturnInst::classof(&*inst))
   			builder.CreateRet(cast<ReturnInst>(&*inst)->getReturnValue());
+  		else if(llvm::SwitchInst::classof(&*inst)) {
+  			llvm::SwitchInst* sw = cast<SwitchInst>(&*inst);
+  			auto def =  bbsMap.find(sw->getDefaultDest());
+  			llvm::SwitchInst* nsw = builder.CreateSwitch(sw->getCondition(), def->second, sw->getNumCases());
+  			for(unsigned i = 0; i < sw->getNumSuccessors(); i++) {
+  				llvm::BasicBlock* next = sw->getSuccessor(i);
+  				if(next != def->first) {
+  					auto bb = bbsMap.find(next);
+  					nsw->addCase(sw->findCaseDest(next), bb->second);
+  				}	
+  			}
+  		}
   	}
+  }
+  
+  for(unsigned i = 0; i < tempVector.size(); i++) {
+  
+  	llvm::BasicBlock* bb = tempVector[i];
+  	
+  	std::vector<llvm::Instruction*> toerase;
+  	
+  	for(auto inst = bb->begin(); inst != bb->end(); ++inst) {
+  		if(llvm::PHINode::classof(&*inst)) toerase.push_back(&*inst);  
+  	}
+  	
+  	for(auto inst : toerase) inst->eraseFromParent();
+  	
+  	toerase.clear();
+  	
+  	builder.SetInsertPoint(bb);
+  	
+  	llvm::Instruction* end = bb->getTerminator();
+  	end->eraseFromParent();
+  	
+  	if(i == tempVector.size() - 1) {
+  		auto start = bbsMap.find(&(Func.getEntryBlock()));
+  		builder.CreateBr(start->second);
+  	}
+  	else  builder.CreateBr(tempVector[i+1]);
+  	
   }
   
   
@@ -203,69 +242,4 @@ static void printInputsVectorResult(raw_ostream &OutS,
   
 }
 
-
-
-
-/*for (auto i : InputVector)
-	{
-			if(llvm::BranchInst::classof(i))
-			{
-				if(cast<BranchInst>(*i).isConditional())
-				{
-				
-					//save references
-					llvm::BasicBlock* Then = cast<BranchInst>(*i).getSuccessor(0);
-					llvm::BasicBlock* Else = cast<BranchInst>(*i).getSuccessor(1);
-					llvm::BasicBlock* End = cast<BranchInst>(*i).getSuccessor(1)->getSingleSuccessor();
-					
-					//in the case of a single if: the else part of the branch ist is the end block
-					if(Then->getSingleSuccessor() == Else) End = Else;
-					
-					//creation of the new basic blocks
-					llvm::BasicBlock* bbCondition = llvm::BasicBlock::Create(Func.getContext(), "", &Func, End);
-					llvm::BasicBlock* bb1 = llvm::BasicBlock::Create(Func.getContext(), "", &Func, End);
-					llvm::BasicBlock* bb2 = llvm::BasicBlock::Create(Func.getContext(), "", &Func, End);
-					
-					//in case of a if-else: the branch of else must be set to bbCondition 
-					if(Then->getSingleSuccessor() != Else) Else->getTerminator()->setSuccessor(0,bbCondition);
-					
-					//useing of a builder to fix the connections between the new blocks
-					IRBuilder<> builder(bbCondition);
-					builder.SetInsertPoint(bbCondition);
-					builder.CreateCondBr(cast<BranchInst>(*i).getCondition(), bb1, bb2);
-					builder.SetInsertPoint(bb1);
-					builder.CreateBr(End);
-					builder.SetInsertPoint(bb2);
-					builder.CreateBr(End);
-					
-					//fix phi of the end block
-					for(auto &phi : End->phis()) {
-					
-						for(unsigned k=0; k < phi.getNumIncomingValues();k++)
-						{
-								if(phi.getIncomingBlock(k) == Then)
-									phi.setIncomingBlock(k, bb1);
-								
-								if(phi.getIncomingBlock(k) == Else)
-									phi.setIncomingBlock(k, bb2);
-								
-								//in case of a sigle if: the input label is the base block
-								if(phi.getIncomingBlock(k) == cast<Instruction>(*i).getParent()) {
-									if(k==0) phi.setIncomingBlock(k, bb1);
-									else phi.setIncomingBlock(k, bb2);
-									}
-						}
-					}
-					
-					//fix successors of the original blocks
-					if(Then->getSingleSuccessor() != Else) Then->getTerminator()->setSuccessor(0,Else);
-					else Then->getTerminator()->setSuccessor(0,bbCondition);
-					
-					llvm::Instruction* firstBranch = llvm::BranchInst::Create(cast<BranchInst>(*i).getSuccessor(0));
-					firstBranch->insertAfter(&cast<Instruction>(*i));
-					cast<Instruction>(*i).eraseFromParent();
-				}
-			}
-			
-	}*/
 

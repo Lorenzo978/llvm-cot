@@ -12,10 +12,17 @@
 int foo(int a) {
 
 	int res = 2;
-
-	for(int i = 0; i < 7; i++) {
+	
+	if(a>10)  {
+		res = a + 8;
+		printf("ciao");
+	}
+	else {
+		for(int i = 0; i < 7; i++) {
 			res = res * a;
 		}
+	
+	}
  
   return res;
 }
