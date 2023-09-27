@@ -159,12 +159,15 @@ static void printInputsVectorResult(raw_ostream &OutS,
  
   for(auto bb = Func.begin(); bb != Func.end(); ++bb) {
   	tempVector.push_back(&*bb);
-  } 
+  }
+  
+  for(auto bb : tempVector) bbsMap.insert(std::make_pair(bb, llvm::BasicBlock::Create(Func.getContext(), "", &Func)));
   
   IRBuilder<> builder (bbsMap.begin()->second);
   
   for(auto pair = bbsMap.begin(); pair != bbsMap.end(); ++pair) {
   
+  	
   	builder.SetInsertPoint(pair->second);
   	
   	bool flag = false;
@@ -213,6 +216,7 @@ static void printInputsVectorResult(raw_ostream &OutS,
   			}
   		}
   	}
+ 
   }
   
   
@@ -227,34 +231,43 @@ static void printInputsVectorResult(raw_ostream &OutS,
   	llvm::BasicBlock* bb = tempVector[i];
 
   	bool flag = false;
-  	
   	for(auto loop = LI.begin(); loop != LI.end() && flag != true; ++loop) {
+  		
   		if(bb == (*loop)->getLoopPreheader()) {
   			flag = true;
-  			exitingBlocks.resize((*loop)->getNumBlocks());
-  			(*loop)->getExitingBlocks(exitingBlocks);
+  			(*loop)->getExitBlocks(exitingBlocks);
   			exiting = exitingBlocks.size();
   		}
   	}
   	
   	if(exiting != 0) {
-  		
   		flag = false;
   		for(auto loop = LI.begin(); loop != LI.end() && flag != true; ++loop) {
-  			if((*loop)->contains(bb)) flag = true; 
+  			if((*loop)->contains(bb) || (*loop)->getLoopPreheader() == bb ) flag = true; 
   		}
+  		
+  		if(std::find(exitingBlocks.begin(), exitingBlocks.end(), bb) != exitingBlocks.end())
+  			flag=true;
   		
   		if(flag) {
   			if(std::find(exitingBlocks.begin(), exitingBlocks.end(), bb) != exitingBlocks.end()) {
   				exiting--;
   				if(exiting == 0) {
-  					for(unsigned j = 0; j < queue.size(); j++) {
-  						llvm::BasicBlock* x = queue[j];
-  						builder.SetInsertPoint(x);
-  						llvm::Instruction* end = x->getTerminator();
-  						end->eraseFromParent();
-  						if(j == queue.size() - 1) builder.CreateBr(tempVector[i+1]);
-  						else builder.CreateBr(queue[j+1]);
+  					if(queue.size() > 0){
+  					
+	  					builder.SetInsertPoint(bb);
+	  					llvm::Instruction* end = bb->getTerminator();
+						end->eraseFromParent();
+						builder.CreateBr(queue[0]);
+						
+	  					for(unsigned j = 0; j < queue.size(); j++) {
+	  						llvm::BasicBlock* x = queue[j];
+	  						builder.SetInsertPoint(x);
+	  						end = x->getTerminator();
+	  						end->eraseFromParent();
+	  						if(j == queue.size() - 1) builder.CreateBr(tempVector[i+1]);
+	  						else builder.CreateBr(queue[j+1]);
+	  					}
   					}
   				}
   				else {
@@ -289,6 +302,7 @@ static void printInputsVectorResult(raw_ostream &OutS,
   		}
   		else  builder.CreateBr(tempVector[i+1]);  	
   	}
+  	
   	
   }
   
