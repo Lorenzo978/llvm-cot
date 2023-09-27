@@ -9,6 +9,7 @@
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Dominators.h"
 #include "llvm/Analysis/LoopInfo.h"
+#include "llvm/ADT/SmallVector.h"
 #include <map>
 
 using namespace llvm;
@@ -158,16 +159,7 @@ static void printInputsVectorResult(raw_ostream &OutS,
  
   for(auto bb = Func.begin(); bb != Func.end(); ++bb) {
   	tempVector.push_back(&*bb);
-  }
-  
-  for(auto bb : tempVector) {
-  	bool flag = true;
-  	for(auto loop = LI.begin(); loop != LI.end(); ++loop) {
-  		flag = flag && !((*loop)->contains(&*bb));
-  		if((&*bb) == (*loop)->getHeader())   bbsMap.insert(std::make_pair(bb, llvm::BasicBlock::Create(Func.getContext(), "", &Func)));
-  	}
-  	if(flag) bbsMap.insert(std::make_pair(bb, llvm::BasicBlock::Create(Func.getContext(), "", &Func)));
-  }
+  } 
   
   IRBuilder<> builder (bbsMap.begin()->second);
   
@@ -177,13 +169,9 @@ static void printInputsVectorResult(raw_ostream &OutS,
   	
   	bool flag = false;
   	
-  	for(auto loop = LI.begin(); loop != LI.end(); ++loop) {
-  		if((pair->first) == (*loop)->getHeader())  {
-  			flag = true;
-  			
-  		
-  		}
-  	}
+  	for(auto loop = LI.begin(); loop != LI.end() && flag != true; ++loop) {
+  		if((*loop)->contains(pair->first)) flag = true;
+  	}	
   	
   	for(auto inst = pair->first->begin(); inst != pair->first->end(); ++inst) {
   		if(llvm::BranchInst::classof(&*inst)) {
@@ -199,7 +187,7 @@ static void printInputsVectorResult(raw_ostream &OutS,
   				builder.CreateBr(bb3->second);
   			}
   		}
-  		else if(llvm::PHINode::classof(&*inst)) {
+  		else if(llvm::PHINode::classof(&*inst) && !flag) {
   			llvm::PHINode* phi = cast<PHINode>(&*inst);
   			llvm::PHINode* pnew =  builder.CreatePHI(phi->getType(), phi->getNumIncomingValues());
   			
@@ -227,30 +215,80 @@ static void printInputsVectorResult(raw_ostream &OutS,
   	}
   }
   
+  
+  std::vector<llvm::BasicBlock*> queue;
+  unsigned exiting = 0;
+  
+  
+  llvm::SmallVector<llvm::BasicBlock*, 8> exitingBlocks; 
+  
   for(unsigned i = 0; i < tempVector.size(); i++) {
   
   	llvm::BasicBlock* bb = tempVector[i];
+
+  	bool flag = false;
   	
-  	std::vector<llvm::Instruction*> toerase;
-  	
-  	for(auto inst = bb->begin(); inst != bb->end(); ++inst) {
-  		if(llvm::PHINode::classof(&*inst)) toerase.push_back(&*inst);  
+  	for(auto loop = LI.begin(); loop != LI.end() && flag != true; ++loop) {
+  		if(bb == (*loop)->getLoopPreheader()) {
+  			flag = true;
+  			exitingBlocks.resize((*loop)->getNumBlocks());
+  			(*loop)->getExitingBlocks(exitingBlocks);
+  			exiting = exitingBlocks.size();
+  		}
   	}
   	
-  	for(auto inst : toerase) inst->eraseFromParent();
-  	
-  	toerase.clear();
-  	
-  	builder.SetInsertPoint(bb);
-  	
-  	llvm::Instruction* end = bb->getTerminator();
-  	end->eraseFromParent();
-  	
-  	if(i == tempVector.size() - 1) {
-  		auto start = bbsMap.find(&(Func.getEntryBlock()));
-  		builder.CreateBr(start->second);
+  	if(exiting != 0) {
+  		
+  		flag = false;
+  		for(auto loop = LI.begin(); loop != LI.end() && flag != true; ++loop) {
+  			if((*loop)->contains(bb)) flag = true; 
+  		}
+  		
+  		if(flag) {
+  			if(std::find(exitingBlocks.begin(), exitingBlocks.end(), bb) != exitingBlocks.end()) {
+  				exiting--;
+  				if(exiting == 0) {
+  					for(unsigned j = 0; j < queue.size(); j++) {
+  						llvm::BasicBlock* x = queue[j];
+  						builder.SetInsertPoint(x);
+  						llvm::Instruction* end = x->getTerminator();
+  						end->eraseFromParent();
+  						if(j == queue.size() - 1) builder.CreateBr(tempVector[i+1]);
+  						else builder.CreateBr(queue[j+1]);
+  					}
+  				}
+  				else {
+  					builder.SetInsertPoint(bb);
+  					llvm::Instruction* end = bb->getTerminator();
+  					end->eraseFromParent();
+  					builder.CreateBr(tempVector[i+1]);
+  				}
+  			}
+  		}
+  		else queue.push_back(bb);
   	}
-  	else  builder.CreateBr(tempVector[i+1]);
+  	else {
+  		std::vector<llvm::Instruction*> toerase;
+  	
+  		for(auto inst = bb->begin(); inst != bb->end(); ++inst) {
+  			if(llvm::PHINode::classof(&*inst)) toerase.push_back(&*inst);  
+  		}
+  	
+  		for(auto inst : toerase) inst->eraseFromParent();
+  	
+  		toerase.clear();	
+		
+		builder.SetInsertPoint(bb);
+  	
+  		llvm::Instruction* end = bb->getTerminator();
+  		end->eraseFromParent();
+  	
+  		if(i == tempVector.size() - 1) {
+  			auto start = bbsMap.find(&(Func.getEntryBlock()));
+  			builder.CreateBr(start->second);
+  		}
+  		else  builder.CreateBr(tempVector[i+1]);  	
+  	}
   	
   }
   
