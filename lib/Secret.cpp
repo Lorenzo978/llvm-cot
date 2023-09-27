@@ -160,13 +160,30 @@ static void printInputsVectorResult(raw_ostream &OutS,
   	tempVector.push_back(&*bb);
   }
   
-  for(auto bb : tempVector) bbsMap.insert(std::make_pair(bb, llvm::BasicBlock::Create(Func.getContext(), "", &Func)));
+  for(auto bb : tempVector) {
+  	bool flag = true;
+  	for(auto loop = LI.begin(); loop != LI.end(); ++loop) {
+  		flag = flag && !((*loop)->contains(&*bb));
+  		if((&*bb) == (*loop)->getHeader())   bbsMap.insert(std::make_pair(bb, llvm::BasicBlock::Create(Func.getContext(), "", &Func)));
+  	}
+  	if(flag) bbsMap.insert(std::make_pair(bb, llvm::BasicBlock::Create(Func.getContext(), "", &Func)));
+  }
   
   IRBuilder<> builder (bbsMap.begin()->second);
   
   for(auto pair = bbsMap.begin(); pair != bbsMap.end(); ++pair) {
   
   	builder.SetInsertPoint(pair->second);
+  	
+  	bool flag = false;
+  	
+  	for(auto loop = LI.begin(); loop != LI.end(); ++loop) {
+  		if((pair->first) == (*loop)->getHeader())  {
+  			flag = true;
+  			
+  		
+  		}
+  	}
   	
   	for(auto inst = pair->first->begin(); inst != pair->first->end(); ++inst) {
   		if(llvm::BranchInst::classof(&*inst)) {
