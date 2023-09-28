@@ -25,63 +25,18 @@ Secret::Result Secret::generateInputVector(llvm::Function &Func) {
   for(auto arg = Func.arg_begin(); arg != Func.arg_end(); ++arg) {
       inputsVector.push_back(cast<Value>(arg));
   }
-
-
-  /*std::vector<llvm::BasicBlock*> parentsVector;
-  long unsigned int cur, pcur, i, j;
+  
+  long unsigned int cur = inputsVector.size(), i = 0;
   
   do {
-  
-  	parentsVector.clear();
-  	cur = inputsVector.size();
-  	i = 0;
-  	
-  	do {
-    		cur = inputsVector.size();
-    		llvm::Value* val = inputsVector[i];
-    		for(auto istr = val->user_begin(); istr != val->user_end(); ++istr) {
-      			if(std::find(inputsVector.begin(),inputsVector.end(),*istr) == inputsVector.end()) {
-      				inputsVector.push_back(*istr);
-      				if(llvm::BranchInst::classof(*istr) && cast<BranchInst>(*istr)->isConditional()) {
-      					llvm::BasicBlock* bb1 = cast<BranchInst>(*istr)->getSuccessor(0);
-      					llvm::BasicBlock* bb2 = cast<BranchInst>(*istr)->getSuccessor(1);
-      					if(std::find(parentsVector.begin(), parentsVector.end(), bb1) == parentsVector.end()) 
-      						parentsVector.push_back(cast<BranchInst>(*istr)->getSuccessor(0));
-      					if(std::find(parentsVector.begin(), parentsVector.end(), bb2) == parentsVector.end()) 
-      						parentsVector.push_back(cast<BranchInst>(*istr)->getSuccessor(1));
-      				}
-      			}
-    		}
-    		i++;
-  	} while(inputsVector.size() != cur || i < cur);
-  	
-  	
-  	pcur = parentsVector.size();
-  	j = 0;
-  	
-  	do {
-  		pcur = parentsVector.size();
-  		llvm::BasicBlock* bb = parentsVector[j];
-  		for(auto inst = bb->begin(); inst != bb->end(); ++inst) {
-  	
-  			if(!((&*inst)->getType()->isVoidTy()) && std::find(inputsVector.begin(),inputsVector.end(),&*inst) == inputsVector.end()) inputsVector.push_back(&*inst);
-  			else {
-  				if(llvm::BranchInst::classof(&*inst) && cast<BranchInst>(*inst).isConditional()) {
-  		
-  					if(std::find(inputsVector.begin(),inputsVector.end(),&*inst) == inputsVector.end()) {
-  			
-  						if(std::find(parentsVector.begin(),parentsVector.end(),cast<BranchInst>(*inst).getSuccessor(0)) == parentsVector.end()) parentsVector.push_back(cast<BranchInst>(*inst).getSuccessor(0));
-  				
-  						if(std::find(parentsVector.begin(),parentsVector.end(),cast<BranchInst>(*inst).getSuccessor(1)) == parentsVector.end()) parentsVector.push_back(cast<BranchInst>(*inst).getSuccessor(1));
-  					}	
-  				}	
-  			}
-  		}
-  		j++;
-  	} while(parentsVector.size() != pcur || j < pcur);
-  	
-  
-  } while(inputsVector.size() != cur);*/
+    	cur = inputsVector.size();
+    	llvm::Value* val = inputsVector[i];
+    	for(auto istr = val->user_begin(); istr != val->user_end(); ++istr) {
+      		if(std::find(inputsVector.begin(),inputsVector.end(),*istr) == inputsVector.end()) 
+      			inputsVector.push_back(*istr);
+    	}
+    	i++;
+  } while(inputsVector.size() != cur || i < cur);
   
   return inputsVector;
 }
@@ -138,9 +93,77 @@ llvmGetPassPluginInfo() {
   return getInputVectorPluginInfo();
 }
 
-//------------------------------------------------------------------------------
-// Helper functions - implementation
-//------------------------------------------------------------------------------
+
+static void modifyNumCyclesLoop(const ResultSecret &InputVector, &Func) {
+
+	 /*
+  identifico i paramentri e derivati
+  
+  indentivo i branch conditional che appartengono ai loop (di uscita) e sono derivati dai paramentri
+  
+  identifico la condizione (icmp)
+  
+  prendo gli operandi
+  
+  trovo l' accesso all, array e il corrispondente indice (vericare che sia un alloca)
+  
+  per derivate trovo gli users
+  
+  se questi sono negli operandi modifico la condizione di uscita imponendo la dimensione dell'array
+  
+  */
+  llvm::DominatorTree DT (Func);
+  llvm::LoopInfo LI (DT);
+  
+  for(auto loop = LI.begin(); loop != LI.end(); ++loop) {
+  	for(auto inst : InputVector) {
+  	
+  		if((*loop)->contains(&*inst) && llvm::BranchInst::classof(&*inst) {
+  			llvm::BranchInst* br = cast<BranchInst>(&*inst);
+  			llvm::SmallVector<llvm::BasicBlock*, 8> exitBlocks;
+  			(*loop)->getExitBlocks(exitBlocks);
+  			
+  			if(br->isConditional() 
+  				&& (std::find(exitBlocks.begin(), exitBlocks.end(), br->getSuccessor(0)) || std::find(exitBlocks.begin(), exitBlocks.end(), br->getSuccessor(1)))) {
+  				llvm::User* cmp = br->getCondition();
+  				
+  				for(auto bb = (*loop)->block_begin(); bb != (*loop)->block_end(); ++bb) {
+  					for(auto temp = (*bb).begin(); temp != (*bb).end(); ++temp) {
+  						if(llvm::GetElementPtrInst::classof(&*temp)) {
+  							llvm::Value* g = cast<GetElementPtrInst>(&*temp)->getPointerOperand();
+  							if(llvm::AllocInst::classof(g)) {
+  								llvm::AllocInst* a = cast<AllocInst>(g);
+  								if(a->isArrayAllocation()) {
+  									for(auto index : cast<GetElementPtrInst>(&*temp)->indecis()) {
+  										for(unsigned i = 0; i < cmp->getNumOperands(); i++) {
+  											if(cast<Value>(cmp->getOperand(i)) != (&*index)) cmp->setOperand(i, a->getArraySize());
+  										}
+  									}
+  								
+  								}
+  									
+  							}
+  						
+  						}
+  						
+  					}
+  				
+  				}
+  			}
+  		
+  		} 
+  		
+  	}
+  
+  }
+  
+ 	
+}
+
+
+
+
+
 static void printInputsVectorResult(raw_ostream &OutS,
                                      const ResultSecret &InputVector, Function &Func) {
   OutS << "=================================================" << "\n";
@@ -149,6 +172,8 @@ static void printInputsVectorResult(raw_ostream &OutS,
   for (auto i : InputVector)
     OutS << *i << "\n";
   OutS << "-------------------------------------------------\n";
+ 
+  modifyNumCyclesLoop(Func); 
   
   llvm::DominatorTree DT (Func);
   llvm::LoopInfo LI (DT);
@@ -156,7 +181,6 @@ static void printInputsVectorResult(raw_ostream &OutS,
   std::map<llvm::BasicBlock*, llvm::BasicBlock*> bbsMap;
   llvm::SmallVector<llvm::BasicBlock*, 8> exitBlocks; 
   std::vector<llvm::BasicBlock*> tempVector;
- 
   
   for(auto bb = Func.begin(); bb != Func.end(); ++bb) {
   		tempVector.push_back(&*bb);
@@ -176,8 +200,6 @@ static void printInputsVectorResult(raw_ostream &OutS,
   		
   		if((*loop)->contains(bb))
   			flag=true;
-  			
-  		
   	}
   	
   	

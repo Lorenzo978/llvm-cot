@@ -11,24 +11,16 @@
 
 int foo(int a) {
 
-	int res = 2;
+	int array[8];
+	int res = 0;
 	
-	if(a>10)  {
-		res = a + 8;
-		printf("ciao");
+	for(int i = 0; i < a; i++) {
+		array[i] = i * 2;
 	}
-	else {
-		for(int i = 0; i < 7; i++) {
-			if(a > 5)
-			{
-				res = res + a;
-				printf("ciaodd");
-			}
-			else
-				res = res*a;
-		}
 	
-	}
- 
-  return res;
+	for(int i = a; i < 8; i++) {
+		res += array[i];
+	} 
+	
+	return res;
 }
