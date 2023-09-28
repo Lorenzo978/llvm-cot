@@ -154,80 +154,122 @@ static void printInputsVectorResult(raw_ostream &OutS,
   llvm::LoopInfo LI (DT);
   
   std::map<llvm::BasicBlock*, llvm::BasicBlock*> bbsMap;
-  
+  llvm::SmallVector<llvm::BasicBlock*, 8> exitBlocks; 
   std::vector<llvm::BasicBlock*> tempVector;
  
+  
   for(auto bb = Func.begin(); bb != Func.end(); ++bb) {
-  	tempVector.push_back(&*bb);
+  		tempVector.push_back(&*bb);
   }
   
-  for(auto bb : tempVector) bbsMap.insert(std::make_pair(bb, llvm::BasicBlock::Create(Func.getContext(), "", &Func)));
+  for(auto bb : tempVector) 
+  {
+    	bool flag = false;
+  	exitBlocks.clear();
+    	for(auto loop = LI.begin(); loop != LI.end() && flag != true; ++loop) {
+  		if((*loop)->getLoopPreheader() == bb){
+  			(*loop)->getExitBlocks(exitBlocks);
+  			bbsMap.insert(std::make_pair(bb, llvm::BasicBlock::Create(Func.getContext(), "", &Func)));
+  			bbsMap.insert(std::make_pair(exitBlocks[0], llvm::BasicBlock::Create(Func.getContext(), "", &Func)));
+  			flag = true;
+  		}
+  		
+  		if((*loop)->contains(bb))
+  			flag=true;
+  			
+  		
+  	}
+  	
+  	
+  	if(!flag && bbsMap.find(bb) == bbsMap.end())
+  		bbsMap.insert(std::make_pair(bb, llvm::BasicBlock::Create(Func.getContext(), "", &Func)));
+  }
   
   IRBuilder<> builder (bbsMap.begin()->second);
   
   for(auto pair = bbsMap.begin(); pair != bbsMap.end(); ++pair) {
+  	exitBlocks.clear();
+
   
-  	
   	builder.SetInsertPoint(pair->second);
   	
   	bool flag = false;
   	
   	for(auto loop = LI.begin(); loop != LI.end() && flag != true; ++loop) {
-  		if((*loop)->contains(pair->first)) flag = true;
+  		if((*loop)->getLoopPreheader() == pair->first)
+  		{
+  			(*loop)->getExitBlocks(exitBlocks);
+  			flag = true;
+  		}
   	}	
   	
-  	for(auto inst = pair->first->begin(); inst != pair->first->end(); ++inst) {
-  		if(llvm::BranchInst::classof(&*inst)) {
-  			if(cast<BranchInst>(&*inst)->isConditional()) {
-  				llvm::BranchInst* br = cast<BranchInst>(&*inst);
-  				auto bb1 = bbsMap.find(br->getSuccessor(0));
-  				auto bb2 = bbsMap.find(br->getSuccessor(1));
-  				builder.CreateCondBr(br->getCondition(), bb1->second, bb2->second);
-  			}
-  			else {
-  				llvm::BranchInst* br = cast<BranchInst>(&*inst);
-  				auto bb3 = bbsMap.find(br->getSuccessor(0));
-  				builder.CreateBr(bb3->second);
-  			}
-  		}
-  		else if(llvm::PHINode::classof(&*inst) && !flag) {
-  			llvm::PHINode* phi = cast<PHINode>(&*inst);
-  			llvm::PHINode* pnew =  builder.CreatePHI(phi->getType(), phi->getNumIncomingValues());
-  			
-  			for(unsigned i = 0; i < phi->getNumIncomingValues(); i++) {
-  				auto bbPhi = bbsMap.find(phi->getIncomingBlock(i));
-  				pnew->addIncoming(phi->getIncomingValue(i),  bbPhi->second);
-  			}
-  			
-  			phi->replaceAllUsesWith(pnew);
-  		}
-  		else if(llvm::ReturnInst::classof(&*inst))
-  			builder.CreateRet(cast<ReturnInst>(&*inst)->getReturnValue());
-  		else if(llvm::SwitchInst::classof(&*inst)) {
-  			llvm::SwitchInst* sw = cast<SwitchInst>(&*inst);
-  			auto def =  bbsMap.find(sw->getDefaultDest());
-  			llvm::SwitchInst* nsw = builder.CreateSwitch(sw->getCondition(), def->second, sw->getNumCases());
-  			for(unsigned i = 0; i < sw->getNumSuccessors(); i++) {
-  				llvm::BasicBlock* next = sw->getSuccessor(i);
-  				if(next != def->first) {
-  					auto bb = bbsMap.find(next);
-  					nsw->addCase(sw->findCaseDest(next), bb->second);
-  				}	
-  			}
-  		}
+  	if(flag)
+  	{
+		auto bb3 = bbsMap.find(exitBlocks[0]);
+		builder.CreateBr(bb3->second);
   	}
- 
+  	else
+  	{
+  	  	for(auto inst = pair->first->begin(); inst != pair->first->end(); ++inst) {
+	  		if(llvm::BranchInst::classof(&*inst)) {
+	  			if(cast<BranchInst>(&*inst)->isConditional()) {
+	  				llvm::BranchInst* br = cast<BranchInst>(&*inst);
+	  				auto bb1 = bbsMap.find(br->getSuccessor(0));
+	  				auto bb2 = bbsMap.find(br->getSuccessor(1));
+	  				builder.CreateCondBr(br->getCondition(), bb1->second, bb2->second);
+	  			}
+	  			else {
+	  				llvm::BranchInst* br = cast<BranchInst>(&*inst);
+	  				auto bb3 = bbsMap.find(br->getSuccessor(0));
+	  				builder.CreateBr(bb3->second);
+	  			}
+	  		}
+	  		else if(llvm::PHINode::classof(&*inst) ) {
+	  			llvm::PHINode* phi = cast<PHINode>(&*inst);
+	  			llvm::PHINode* pnew =  builder.CreatePHI(phi->getType(), phi->getNumIncomingValues());
+	  			
+	  			for(unsigned i = 0; i < phi->getNumIncomingValues(); i++) {
+	  				auto bbPhi = bbsMap.find(phi->getIncomingBlock(i));
+	  				pnew->addIncoming(phi->getIncomingValue(i),  bbPhi->second);
+	  			}
+	  			
+	  			phi->replaceAllUsesWith(pnew);
+	  		}
+	  		else if(llvm::ReturnInst::classof(&*inst))
+	  			builder.CreateRet(cast<ReturnInst>(&*inst)->getReturnValue());
+	  		else if(llvm::SwitchInst::classof(&*inst)) {
+	  			llvm::SwitchInst* sw = cast<SwitchInst>(&*inst);
+	  			auto def =  bbsMap.find(sw->getDefaultDest());
+	  			llvm::SwitchInst* nsw = builder.CreateSwitch(sw->getCondition(), def->second, sw->getNumCases());
+	  			for(unsigned i = 0; i < sw->getNumSuccessors(); i++) {
+	  				llvm::BasicBlock* next = sw->getSuccessor(i);
+	  				if(next != def->first) {
+	  					auto bb = bbsMap.find(next);
+	  					nsw->addCase(sw->findCaseDest(next), bb->second);
+	  				}	
+	  			}
+	  		}
+	  	}
+  	}
+  	
+
+  	//errs() << flag << "\n";
+  	//errs() << *(pair->first) << "\n";
+  	//errs() << *(pair->second) << "\n";
   }
   
   
+  errs() << "-----------------\n";
+  
   std::vector<llvm::BasicBlock*> queue;
-  unsigned exiting = 0;
+  unsigned exit = 0;
   
   
-  llvm::SmallVector<llvm::BasicBlock*, 8> exitingBlocks; 
-  
+  exitBlocks.clear();
+   auto start = bbsMap.find(&(Func.getEntryBlock()));
+   
   for(unsigned i = 0; i < tempVector.size(); i++) {
-  
+
   	llvm::BasicBlock* bb = tempVector[i];
 
   	bool flag = false;
@@ -235,24 +277,24 @@ static void printInputsVectorResult(raw_ostream &OutS,
   		
   		if(bb == (*loop)->getLoopPreheader()) {
   			flag = true;
-  			(*loop)->getExitBlocks(exitingBlocks);
-  			exiting = exitingBlocks.size();
+  			(*loop)->getExitBlocks(exitBlocks);
+  			exit = exitBlocks.size();
   		}
   	}
   	
-  	if(exiting != 0) {
+  	if(exit != 0) {
   		flag = false;
   		for(auto loop = LI.begin(); loop != LI.end() && flag != true; ++loop) {
   			if((*loop)->contains(bb) || (*loop)->getLoopPreheader() == bb ) flag = true; 
   		}
   		
-  		if(std::find(exitingBlocks.begin(), exitingBlocks.end(), bb) != exitingBlocks.end())
+  		if(std::find(exitBlocks.begin(), exitBlocks.end(), bb) != exitBlocks.end())
   			flag=true;
   		
   		if(flag) {
-  			if(std::find(exitingBlocks.begin(), exitingBlocks.end(), bb) != exitingBlocks.end()) {
-  				exiting--;
-  				if(exiting == 0) {
+  			if(std::find(exitBlocks.begin(), exitBlocks.end(), bb) != exitBlocks.end()) {
+  				exit--;
+  				if(exit == 0) {
   					if(queue.size() > 0){
   					
 	  					builder.SetInsertPoint(bb);
@@ -270,12 +312,6 @@ static void printInputsVectorResult(raw_ostream &OutS,
 	  					}
   					}
   				}
-  				else {
-  					builder.SetInsertPoint(bb);
-  					llvm::Instruction* end = bb->getTerminator();
-  					end->eraseFromParent();
-  					builder.CreateBr(tempVector[i+1]);
-  				}
   			}
   		}
   		else queue.push_back(bb);
@@ -286,28 +322,31 @@ static void printInputsVectorResult(raw_ostream &OutS,
   		for(auto inst = bb->begin(); inst != bb->end(); ++inst) {
   			if(llvm::PHINode::classof(&*inst)) toerase.push_back(&*inst);  
   		}
-  	
+  		
   		for(auto inst : toerase) inst->eraseFromParent();
-  	
+  		
   		toerase.clear();	
-		
 		builder.SetInsertPoint(bb);
-  	
+  		
   		llvm::Instruction* end = bb->getTerminator();
   		end->eraseFromParent();
-  	
+  		
   		if(i == tempVector.size() - 1) {
-  			auto start = bbsMap.find(&(Func.getEntryBlock()));
+  			//auto start = bbsMap.find(&(Func.getEntryBlock()));
+  			//errs() << *(start->second) << "\n";
   			builder.CreateBr(start->second);
   		}
-  		else  builder.CreateBr(tempVector[i+1]);  	
+  		else  builder.CreateBr(tempVector[i+1]);  
+  		
+  			
   	}
   	
-  	
+  	errs() << *bb << "\n";
   }
   
-  
-
+	errs() << "-----------------\n";
+  for(auto pair = bbsMap.begin(); pair != bbsMap.end(); ++pair) 
+  	errs() << *(pair->second) << "\n";
   
 }
 

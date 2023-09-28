@@ -19,7 +19,8 @@ int foo(int a) {
 	}
 	else {
 		for(int i = 0; i < 7; i++) {
-			res = res * a;
+			for(int j=0; j < a;j++)
+				res = res * a;
 		}
 	
 	}
