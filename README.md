@@ -23,7 +23,11 @@ Always in `llvm-cot/build` folder:
 export LLVM_DIR=/usr/lib/llvm-16
 $LLVM_DIR/bin/clang -O1 -emit-llvm -c ../inputs/test.c -S -o test.ll
 $LLVM_DIR/bin/opt -load-pass-plugin ./lib/libSecret.so --passes="print<inputsVector>" -disable-output test.ll
-
+;or
 $LLVM_DIR/bin/opt -load-pass-plugin ./lib/libSecretNew.so --passes="print<inputsVector>" test.ll -S -o test2.ll
 ```
 To compile the passes use `make` inside `build` directory.
+To generate assembly file for ARM Cortex M4:
+```bash
+$LLVM_DIR/bin/llc -O0 -mtriple=armv7m-none-eabi -filetype=asm test.ll -o output.s
+```

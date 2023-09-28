@@ -19,8 +19,13 @@ int foo(int a) {
 	}
 	else {
 		for(int i = 0; i < 7; i++) {
-			for(int j=0; j < a;j++)
-				res = res * a;
+			if(a > 5)
+			{
+				res = res + a;
+				printf("ciaodd");
+			}
+			else
+				res = res*a;
 		}
 	
 	}
