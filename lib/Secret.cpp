@@ -295,11 +295,12 @@ static void printInputsVectorResult(raw_ostream &OutS,
   			if(std::find(exitBlocks.begin(), exitBlocks.end(), bb) != exitBlocks.end()) {
   				exit--;
   				if(exit == 0) {
+  				
+  					builder.SetInsertPoint(bb);
+	  				llvm::Instruction* end = bb->getTerminator();
+					end->eraseFromParent();
+					
   					if(queue.size() > 0){
-  					
-	  					builder.SetInsertPoint(bb);
-	  					llvm::Instruction* end = bb->getTerminator();
-						end->eraseFromParent();
 						builder.CreateBr(queue[0]);
 						
 	  					for(unsigned j = 0; j < queue.size(); j++) {
@@ -311,6 +312,7 @@ static void printInputsVectorResult(raw_ostream &OutS,
 	  						else builder.CreateBr(queue[j+1]);
 	  					}
   					}
+  					else builder.CreateBr(tempVector[i+1]);
   				}
   			}
   		}
