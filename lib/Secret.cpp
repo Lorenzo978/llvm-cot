@@ -94,14 +94,14 @@ llvmGetPassPluginInfo() {
 }
 
 
-static void modifyNumCyclesLoop(const ResultSecret &InputVector, &Func) {
+static void modifyNumCyclesLoop(const ResultSecret &InputVector, Function &Func) {
 
 	 /*
   identifico i paramentri e derivati
   
-  indentivo i branch conditional che appartengono ai loop (di uscita) e sono derivati dai paramentri
+  identifico la condizione (icmp) -> user
   
-  identifico la condizione (icmp)
+  indentivo i branch conditional che appartengono ai loop (di uscita) e sono derivati dai paramentri
   
   prendo gli operandi
   
@@ -115,47 +115,89 @@ static void modifyNumCyclesLoop(const ResultSecret &InputVector, &Func) {
   llvm::DominatorTree DT (Func);
   llvm::LoopInfo LI (DT);
   
+  
   for(auto loop = LI.begin(); loop != LI.end(); ++loop) {
+  
+  	std::vector<llvm::BranchInst*> InputBrs;
+  	
+  	InputBrs.clear();
+  	
+  	llvm::SmallVector<llvm::BasicBlock*, 8> exitBlocks;
+  	(*loop)->getExitBlocks(exitBlocks);
+  	
   	for(auto inst : InputVector) {
   	
-  		if((*loop)->contains(&*inst) && llvm::BranchInst::classof(&*inst) {
-  			llvm::BranchInst* br = cast<BranchInst>(&*inst);
-  			llvm::SmallVector<llvm::BasicBlock*, 8> exitBlocks;
-  			(*loop)->getExitBlocks(exitBlocks);
+  		if((*loop)->contains(cast<Instruction>(&*inst)) && llvm::BranchInst::classof(&*inst)) {
   			
+  			llvm::BranchInst* br = cast<BranchInst>(&*inst);
   			if(br->isConditional() 
-  				&& (std::find(exitBlocks.begin(), exitBlocks.end(), br->getSuccessor(0)) || std::find(exitBlocks.begin(), exitBlocks.end(), br->getSuccessor(1)))) {
-  				llvm::User* cmp = br->getCondition();
-  				
-  				for(auto bb = (*loop)->block_begin(); bb != (*loop)->block_end(); ++bb) {
-  					for(auto temp = (*bb).begin(); temp != (*bb).end(); ++temp) {
-  						if(llvm::GetElementPtrInst::classof(&*temp)) {
-  							llvm::Value* g = cast<GetElementPtrInst>(&*temp)->getPointerOperand();
-  							if(llvm::AllocInst::classof(g)) {
-  								llvm::AllocInst* a = cast<AllocInst>(g);
-  								if(a->isArrayAllocation()) {
-  									for(auto index : cast<GetElementPtrInst>(&*temp)->indecis()) {
-  										for(unsigned i = 0; i < cmp->getNumOperands(); i++) {
-  											if(cast<Value>(cmp->getOperand(i)) != (&*index)) cmp->setOperand(i, a->getArraySize());
-  										}
-  									}
-  								
-  								}
-  									
-  							}
-  						
-  						}
-  						
-  					}
-  				
-  				}
-  			}
-  		
-  		} 
-  		
+  				&& (std::find(exitBlocks.begin(), exitBlocks.end(), br->getSuccessor(0)) == exitBlocks.end()
+  					||  std::find(exitBlocks.begin(), exitBlocks.end(), br->getSuccessor(1)) == exitBlocks.end()))
+  				InputBrs.push_back(br);
+  		}
   	}
-  
+  	
+  	if(!InputBrs.empty()) {
+  		
+  		for(auto bb : (*loop)->blocks()){
+  			for(auto inst = (*bb).begin(); inst != (*bb).end(); ++inst) {
+  			
+  				if(llvm::GetElementPtrInst::classof(&*inst)) {
+  					
+  					llvm::GetElementPtrInst* ptr = cast<GetElementPtrInst>(&*inst);
+  					
+  					
+  					if(cast<AllocaInst>(ptr->getPointerOperand())->isArrayAllocation()) {
+  						
+  							for(auto index = ptr->idx_begin(); index != ptr->idx_end(); ++ptr){
+  					
+  							std::vector<llvm::Value*> UsersVector;
+  						
+  							UsersVector.clear();
+  						
+							for(auto user : (*index).get()->users()) UsersVector.push_back(&*user);
+					
+							long unsigned int size = UsersVector.size(), i = 0;
+						
+							do {
+								size = UsersVector.size();
+								llvm::Value* cur = UsersVector[i];
+						
+								for(auto user : cur->users()) {
+									if(std::find(UsersVector.begin(), UsersVector.end(), &*user) == UsersVector.end()) 						
+										UsersVector.push_back(&*user);
+								}
+						
+								i++;
+					
+							} while(size != UsersVector.size() || i < size);
+					
+					
+							for(auto brB = InputBrs.begin(); brB != InputBrs.end(); ++brB) {
+						
+  								if(std::find(UsersVector.begin(), UsersVector.end(), (*brB)->getCondition()) != UsersVector.end())  {
+  								
+  									llvm::User* cmp = cast<User>((*brB)->getCondition());
+  									for(unsigned  j = 0; j < cmp->getNumOperands(); j++) {
+  								
+  									if(cmp->getOperand(j) != (*index).get())
+  											cmp->setOperand(j, cast<AllocaInst>(ptr->getPointerOperand())->getArraySize());
+  									}
+  								}
+					
+							}
+  						
+  					
+  						}
+  					}
+  				} 
+  			
+  			}  		
+  		}
+  	
+  	}
   }
+  
   
  	
 }
@@ -173,7 +215,7 @@ static void printInputsVectorResult(raw_ostream &OutS,
     OutS << *i << "\n";
   OutS << "-------------------------------------------------\n";
  
-  modifyNumCyclesLoop(Func); 
+  modifyNumCyclesLoop(InputVector, Func); 
   
   llvm::DominatorTree DT (Func);
   llvm::LoopInfo LI (DT);
