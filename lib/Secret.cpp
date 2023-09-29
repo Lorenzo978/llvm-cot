@@ -127,7 +127,7 @@ static void modifyNumCyclesLoop(const ResultSecret &InputVector, Function &Func)
   	
   	for(auto inst : InputVector) {
   	
-  		if((*loop)->contains(cast<Instruction>(&*inst)) && llvm::BranchInst::classof(&*inst)) {
+  		if(llvm::Instruction::classof(&*inst) && (*loop)->contains(cast<Instruction>(&*inst)) && llvm::BranchInst::classof(&*inst)) {
   			
   			llvm::BranchInst* br = cast<BranchInst>(&*inst);
   			if(br->isConditional() 
@@ -140,55 +140,64 @@ static void modifyNumCyclesLoop(const ResultSecret &InputVector, Function &Func)
   	if(!InputBrs.empty()) {
   		
   		for(auto bb : (*loop)->blocks()){
+  		
   			for(auto inst = (*bb).begin(); inst != (*bb).end(); ++inst) {
   			
   				if(llvm::GetElementPtrInst::classof(&*inst)) {
   					
   					llvm::GetElementPtrInst* ptr = cast<GetElementPtrInst>(&*inst);
   					
+  					if(cast<AllocaInst>(ptr->getPointerOperand())->getAllocatedType()->isArrayTy()) {
+  				
+  						
+  							for(auto index = ptr->idx_begin(); index != ptr->idx_end(); ++index) {
   					
-  					if(cast<AllocaInst>(ptr->getPointerOperand())->isArrayAllocation()) {
+  								std::vector<llvm::Value*> UsersVector;
   						
-  							for(auto index = ptr->idx_begin(); index != ptr->idx_end(); ++ptr){
-  					
-  							std::vector<llvm::Value*> UsersVector;
+  								UsersVector.clear();
   						
-  							UsersVector.clear();
-  						
-							for(auto user : (*index).get()->users()) UsersVector.push_back(&*user);
+								for(auto user : (*index).get()->users()) UsersVector.push_back(&*user);
 					
-							long unsigned int size = UsersVector.size(), i = 0;
+								long unsigned int size = UsersVector.size(), i = 0;
 						
-							do {
-								size = UsersVector.size();
-								llvm::Value* cur = UsersVector[i];
+								do {
+									size = UsersVector.size();
+									llvm::Value* cur = UsersVector[i];
+							
+									for(auto user : cur->users()) {
+										if(std::find(UsersVector.begin(), UsersVector.end(), &*user) == UsersVector.end()) 						
+											UsersVector.push_back(&*user);
+									}
+							
+									i++;
 						
-								for(auto user : cur->users()) {
-									if(std::find(UsersVector.begin(), UsersVector.end(), &*user) == UsersVector.end()) 						
-										UsersVector.push_back(&*user);
+								} while(size != UsersVector.size() || i < size);
+							
+						
+						
+								for(auto brB = InputBrs.begin(); brB != InputBrs.end(); ++brB) {
+							
+	  								if(std::find(UsersVector.begin(), UsersVector.end(), (*brB)->getCondition()) != UsersVector.end())  {
+	  								
+	  									llvm::User* cmp = cast<User>((*brB)->getCondition());
+	  									
+	  									unsigned arraysize = cast<AllocaInst>(ptr->getPointerOperand())->getAllocatedType()->getArrayNumElements();
+	  									
+	  									llvm::Value* vsize = llvm::ConstantInt::get(llvm::Type::getInt64Ty(Func.getContext()), arraysize);
+	  									
+	  									for(unsigned  j = 0; j < cmp->getNumOperands(); j++) {
+	  								
+	  										if(cmp->getOperand(j) != (*index).get()) {
+	  											 
+	  												cmp->setOperand(j, vsize);
+	  										}
+	  									}
+	  								}
+						
 								}
-						
-								i++;
-					
-							} while(size != UsersVector.size() || i < size);
-					
-					
-							for(auto brB = InputBrs.begin(); brB != InputBrs.end(); ++brB) {
-						
-  								if(std::find(UsersVector.begin(), UsersVector.end(), (*brB)->getCondition()) != UsersVector.end())  {
-  								
-  									llvm::User* cmp = cast<User>((*brB)->getCondition());
-  									for(unsigned  j = 0; j < cmp->getNumOperands(); j++) {
-  								
-  									if(cmp->getOperand(j) != (*index).get())
-  											cmp->setOperand(j, cast<AllocaInst>(ptr->getPointerOperand())->getArraySize());
-  									}
-  								}
-					
-							}
   						
-  					
-  						}
+  							}
+  						
   					}
   				} 
   			
