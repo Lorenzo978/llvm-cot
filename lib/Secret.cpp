@@ -137,6 +137,9 @@ static void modifyNumCyclesLoop(const ResultSecret &InputVector, Function &Func)
   		}
   	}
   	
+  	std::map<llvm::BranchInst*, llvm::BasicBlock*> guardMap;
+  	
+  	
   	if(!InputBrs.empty()) {
   		
   		for(auto bb : (*loop)->blocks()){
@@ -147,8 +150,35 @@ static void modifyNumCyclesLoop(const ResultSecret &InputVector, Function &Func)
   					
   					llvm::GetElementPtrInst* ptr = cast<GetElementPtrInst>(&*inst);
   					
-  					if(cast<AllocaInst>(ptr->getPointerOperand())->getAllocatedType()->isArrayTy()) {
-  				
+					if(llvm::AllocaInst::classof(ptr->getPointerOperand()))
+					{
+							if(cast<AllocaInst>(ptr->getPointerOperand())->getAllocatedType()->isArrayTy()) {
+
+  							if((*loop)->isGuarded())
+  							{
+								llvm::BranchInst* guardBr = (*loop)->getLoopGuardBranch();
+								
+								for(auto phi = guardBr->getSuccessor(0)->begin(); phi != guardBr->getSuccessor(0)->end(); ++phi) {
+									if(llvm::PHINode::classof(&*phi))
+									{
+										llvm::PHINode* phiNode = cast<PHINode>(&*phi);		
+										phiNode->removeIncomingValue(guardBr->getParent());					
+
+									}
+								}
+								
+								for(auto phi = guardBr->getSuccessor(1)->begin(); phi != guardBr->getSuccessor(1)->end(); ++phi) {
+									if(llvm::PHINode::classof(&*phi))
+									{
+										llvm::PHINode* phiNode = cast<PHINode>(&*phi);		
+										phiNode->removeIncomingValue(guardBr->getParent());					
+
+									}				
+								
+								}
+								guardMap.insert(std::make_pair(guardBr, (*loop)->getLoopPreheader()));
+								
+							}
   						
   							for(auto index = ptr->idx_begin(); index != ptr->idx_end(); ++index) {
   					
@@ -199,18 +229,28 @@ static void modifyNumCyclesLoop(const ResultSecret &InputVector, Function &Func)
   							}
   						
   					}
+  				
+					}
   				} 
   			
   			}  		
   		}
   	
   	}
-  }
-  
-  
- 	
-}
+	
+	IRBuilder<> builder(Func.getContext());
 
+	for(auto pair = guardMap.begin(); pair != guardMap.end(); ++pair) 
+	{
+		builder.SetInsertPoint(pair->first->getParent());
+		pair->first->eraseFromParent();
+		builder.CreateBr(pair->second);
+	}
+					
+
+
+  }	
+}
 
 
 
@@ -339,35 +379,59 @@ static void printInputsVectorResult(raw_ostream &OutS,
   
   
   exitBlocks.clear();
-   auto start = bbsMap.find(&(Func.getEntryBlock()));
+  auto start = bbsMap.find(&(Func.getEntryBlock()));
    
+  std::map<llvm::Loop*, llvm::SmallVector<llvm::BasicBlock*, 8>> exitBlockMap;
+  std::map<llvm::Loop*, unsigned> exitSizeMap;
+
   for(unsigned i = 0; i < tempVector.size(); i++) {
 
   	llvm::BasicBlock* bb = tempVector[i];
 
   	bool flag = false;
+	bool isInLoop = false;
   	for(auto loop = LI.begin(); loop != LI.end() && flag != true; ++loop) {
   		
   		if(bb == (*loop)->getLoopPreheader()) {
   			flag = true;
-  			(*loop)->getExitBlocks(exitBlocks);
-  			exit = exitBlocks.size();
+			llvm::SmallVector<llvm::BasicBlock*, 8> tempExitBlock;
+  			(*loop)->getExitBlocks(tempExitBlock);
+			exitBlockMap.insert(std::make_pair((*loop), tempExitBlock));
+			exitSizeMap.insert(std::make_pair((*loop), tempExitBlock.size()));
   		}
+
+		if((*loop)->contains(bb))
+			isInLoop = true;
   	}
   	
-  	if(exit != 0) {
+  	//errs() << std::any_of(exitSizeMap.begin(), exitSizeMap.end(),[](const auto& pair) { return pair.second > 0; }) << "\n";
+  	if(std::any_of(exitSizeMap.begin(), exitSizeMap.end(),[](const auto& pair) { return pair.second > 0; })) {
   		flag = false;
+		llvm::Loop* loopKey;
+		llvm::SmallVector<llvm::BasicBlock*, 8> tempExitBlock;
   		for(auto loop = LI.begin(); loop != LI.end() && flag != true; ++loop) {
-  			if((*loop)->contains(bb) || (*loop)->getLoopPreheader() == bb ) flag = true; 
+  			if((*loop)->contains(bb) || (*loop)->getLoopPreheader() == bb ) 
+			{
+				loopKey = *loop;
+				flag = true; 
+			}
+
+			(*loop)->getExitBlocks(tempExitBlock);
+  			if(std::find(tempExitBlock.begin(), tempExitBlock.end(), bb) != tempExitBlock.end())
+			{
+				loopKey = *loop;
+				flag = true; 
+			}
   		}
-  		
-  		if(std::find(exitBlocks.begin(), exitBlocks.end(), bb) != exitBlocks.end())
-  			flag=true;
-  		
+
+		//if(tempExitBlock->second.size()>0)
+		//errs() << *(tempExitBlock->second[0]) << "--aa-\n";
   		if(flag) {
-  			if(std::find(exitBlocks.begin(), exitBlocks.end(), bb) != exitBlocks.end()) {
-  				exit--;
-  				if(exit == 0) {
+	  		auto foundExitBlocks = exitBlockMap.find(loopKey);
+  			if(std::find(foundExitBlocks->second.begin(), foundExitBlocks->second.end(), bb) != foundExitBlocks->second.end()) {
+  				errs() << flag <<"\n";
+  				exitSizeMap[loopKey]--;
+  				if(exitSizeMap[loopKey] == 0) {
   				
   					builder.SetInsertPoint(bb);
 	  				llvm::Instruction* end = bb->getTerminator();
@@ -392,30 +456,36 @@ static void printInputsVectorResult(raw_ostream &OutS,
   		else queue.push_back(bb);
   	}
   	else {
-  		std::vector<llvm::Instruction*> toerase;
-  	
-  		for(auto inst = bb->begin(); inst != bb->end(); ++inst) {
-  			if(llvm::PHINode::classof(&*inst)) toerase.push_back(&*inst);  
-  		}
+		if(!isInLoop)
+		{
+			std::vector<llvm::Instruction*> toerase;
+		
+			for(auto inst = bb->begin(); inst != bb->end(); ++inst) {
+				if(llvm::PHINode::classof(&*inst)) toerase.push_back(&*inst);  
+			}
+			
+			for(auto inst : toerase) inst->eraseFromParent();
+			
+			toerase.clear();	
+			builder.SetInsertPoint(bb);
+			
+			llvm::Instruction* end = bb->getTerminator();
+			
+			if(llvm::ReturnInst::classof(end))
+				builder.CreateBr(start->second);
+			else
+			{
+				if(i == tempVector.size() - 1) {
+					builder.CreateBr(start->second);
+				}
+				else  builder.CreateBr(tempVector[i+1]);  
+			}
+
+			end->eraseFromParent();
   		
-  		for(auto inst : toerase) inst->eraseFromParent();
-  		
-  		toerase.clear();	
-		builder.SetInsertPoint(bb);
-  		
-  		llvm::Instruction* end = bb->getTerminator();
-  		end->eraseFromParent();
-  		
-  		if(i == tempVector.size() - 1) {
-  			//auto start = bbsMap.find(&(Func.getEntryBlock()));
-  			//errs() << *(start->second) << "\n";
-  			builder.CreateBr(start->second);
-  		}
-  		else  builder.CreateBr(tempVector[i+1]);  
-  		
+		}
   			
   	}
-  	
   	errs() << *bb << "\n";
   }
   
