@@ -14,11 +14,11 @@ int foo(int a) {
 	int array[8];
 	int res = 0;
 	
-	for(int i = 0; i < a; i++) {
+	for(int i = 0; i <= a; i++) {
 		array[i] = i * 2;
 	}
 	
-	for(int i = a; i < 8; i++) {
+	for(int i = a; i > 2; i--) {
 		res += array[i];
 	} 
 	

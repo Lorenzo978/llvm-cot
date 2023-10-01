@@ -96,22 +96,7 @@ llvmGetPassPluginInfo() {
 
 static void modifyNumCyclesLoop(const ResultSecret &InputVector, Function &Func) {
 
-	 /*
-  identifico i paramentri e derivati
-  
-  identifico la condizione (icmp) -> user
-  
-  indentivo i branch conditional che appartengono ai loop (di uscita) e sono derivati dai paramentri
-  
-  prendo gli operandi
-  
-  trovo l' accesso all, array e il corrispondente indice (vericare che sia un alloca)
-  
-  per derivate trovo gli users
-  
-  se questi sono negli operandi modifico la condizione di uscita imponendo la dimensione dell'array
-  
-  */
+
   llvm::DominatorTree DT (Func);
   llvm::LoopInfo LI (DT);
   
@@ -213,19 +198,92 @@ static void modifyNumCyclesLoop(const ResultSecret &InputVector, Function &Func)
 	  									
 	  									unsigned arraysize = cast<AllocaInst>(ptr->getPointerOperand())->getAllocatedType()->getArrayNumElements();
 	  									
-	  									llvm::Value* vsize = llvm::ConstantInt::get(llvm::Type::getInt64Ty(Func.getContext()), arraysize);
-	  									
 	  									for(unsigned  j = 0; j < cmp->getNumOperands(); j++) {
 	  								
-	  										if(cmp->getOperand(j) != (*index).get()) {
+	  										if(std::find(UsersVector.begin(), UsersVector.end(), cmp->getOperand(j)) == UsersVector.end() 
+	  											&& std::find(InputVector.begin(), InputVector.end(), cmp->getOperand(j)) != InputVector.end()) {
 	  											 
-	  												cmp->setOperand(j, vsize);
-	  										}
+											 	if(llvm::ICmpInst::isGT(cast<ICmpInst>((*brB)->getCondition())->getPredicate())) {
+											 	
+											 		llvm::Value* vsize = llvm::ConstantInt::get(llvm::Type::getInt64Ty(Func.getContext()), -1);
+											 		cmp->setOperand(j, vsize);
+											 	}
+												else if(llvm::ICmpInst::isGE(cast<ICmpInst>((*brB)->getCondition())->getPredicate())) {
+												
+													llvm::Value* vsize = llvm::ConstantInt::get(llvm::Type::getInt64Ty(Func.getContext()), 0);
+													cmp->setOperand(j, vsize);
+												}
+											 	else if(llvm::ICmpInst::isLT(cast<ICmpInst>((*brB)->getCondition())->getPredicate())) {
+											 		
+											 		llvm::Value* vsize = llvm::ConstantInt::get(llvm::Type::getInt64Ty(Func.getContext()), arraysize - 1);
+											 		cmp->setOperand(j, vsize);
+											 	}
+											 	else {
+											 		
+											 		llvm::Value* vsize = llvm::ConstantInt::get(llvm::Type::getInt64Ty(Func.getContext()), arraysize);
+											 		cmp->setOperand(j, vsize);
+											 	}
+											}
 	  									}
+	  									
+	  									std::vector<llvm::Value*> UsesVector;
+								
+										UsesVector.clear();
+										
+										for(auto uses = (*index).get()->use_begin(); uses != (*index).get()->use_end(); ++uses)
+											 UsesVector.push_back((*uses).get());
+										
+										size = UsesVector.size();
+										i = 0;
+										
+										bool find = false;
+								
+										do {
+											size = UsesVector.size();
+											
+											llvm::Value* cur = UsersVector[i];
+											
+											if(llvm::PHINode::classof(UsesVector[i])) { 
+											
+												llvm::PHINode* phi = cast<PHINode>(UsesVector[i]);
+												for(unsigned j = 0; j < phi->getNumIncomingValues(); j++) {
+													if(phi->getIncomingBlock(j) == (*loop)->getLoopPreheader()) {
+														if(std::find(InputVector.begin(), InputVector.end(), phi->getIncomingValue(j)) 
+															!= InputVector.end()) {
+															
+															if(llvm::ICmpInst::isGT(cast<ICmpInst>((*brB)->getCondition())->getPredicate()) 
+																|| llvm::ICmpInst::isGE(cast<ICmpInst>((*brB)->getCondition())->getPredicate())) {
+														 	
+														 		llvm::Value* vsize = llvm::ConstantInt::get(llvm::Type::getInt64Ty(Func.getContext()), arraysize - 1);
+														 		phi->setIncomingValue(j, vsize);
+														 	}
+														 	else {
+														 		llvm::Value* vsize = llvm::ConstantInt::get(llvm::Type::getInt64Ty(Func.getContext()), 0);
+														 		phi->setIncomingValue(j, vsize);
+														 	}
+															find = true;
+														}
+													}
+												
+												}
+											}
+											
+											if(find) break;
+											
+											for(auto uses = cur->use_begin(); uses != cur->use_end(); ++uses) {
+												if(std::find(UsesVector.begin(), UsesVector.end(), (*uses).get()) == UsesVector.end()) 						
+													UsersVector.push_back((*uses).get());
+													
+												
+											}
+									
+											i++;
+								
+										} while(size != UsesVector.size() || i < size );
 	  								}
 						
 								}
-  						
+								
   							}
   						
   					}
@@ -375,7 +433,6 @@ static void printInputsVectorResult(raw_ostream &OutS,
   errs() << "-----------------\n";
   
   std::vector<llvm::BasicBlock*> queue;
-  unsigned exit = 0;
   
   
   exitBlocks.clear();
