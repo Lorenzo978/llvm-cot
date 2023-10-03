@@ -103,6 +103,15 @@ static void serializeLoop(const ResultSecret &InputVector, Loop &Loop, Function 
   llvm::DominatorTree DT (Func);
   llvm::LoopInfo LI (DT);
 
+  errs() << "-----------------------------------------------------------------------\n";
+
+  for(auto bb = Loop.block_begin(); bb != Loop.block_end(); ++bb) {
+	errs() << **bb << "\n";
+	tempVector.push_back(*bb);
+  }
+
+  errs() << "-----------------------------------------------------------------------\n";
+
   for(auto bb : tempVector) 
   {
 	bool flag = false;
@@ -317,13 +326,21 @@ static void serializeLoop(const ResultSecret &InputVector, Loop &Loop, Function 
 			
 			if(llvm::ReturnInst::classof(end) || i == tempVector.size() - 1 || std::find(exitingBlocks.begin(), exitingBlocks.end(), bb) != exitingBlocks.end())
 				builder.CreateBr(start->second);
-			else  builder.CreateBr(tempVector[i+1]); 
+			else builder.CreateBr(tempVector[i+1]);
 
 			end->eraseFromParent();
   		
 		}
   	}
   }
+
+    errs() << "-----------------------------------------------------------------------\n";
+
+  for(auto bb = Loop.block_begin(); bb != Loop.block_end(); ++bb) {
+	errs() << **bb << "\n";
+  	}
+
+  	errs() << "-----------------------------------------------------------------------\n";
 }
 
 static void getAllInnerLoops(llvm::Loop* CurrentLoop, std::vector<llvm::Loop*>& InnerLoops) {
@@ -561,6 +578,12 @@ static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func
 
 static void printInputsVectorResult(raw_ostream &OutS,
                                      const ResultSecret &InputVector, Function &Func) {
+  OutS << "=================================================" << "\n";
+  OutS << "LLVM-TUTOR: InputVector results\n";
+  OutS << "=================================================\n";
+  for (auto i : InputVector)
+    OutS << *i << "\n";
+  OutS << "-------------------------------------------------\n";
  
   modifyNumCyclesLoops(InputVector, Func); 
   
