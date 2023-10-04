@@ -337,6 +337,14 @@ static void getAllInnerLoops(llvm::Loop* CurrentLoop, std::vector<llvm::Loop*>& 
     }
 }
 
+static void getAllUsers(llvm::Value* Inst, std::vector<llvm::Value*>& UsersVector) {
+	UsersVector.push_back(Inst);
+
+	for(auto temp : Inst->users()) {
+		if(std::find(UsersVector.begin(), UsersVector.end(), &*temp) == UsersVector.end()) getAllUsers(&*temp, UsersVector);
+	}
+}
+
 static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func) {
 
 
@@ -349,8 +357,8 @@ static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func
 
   for(auto loop = allLoopsVector.rbegin(); loop != allLoopsVector.rend(); ++loop) {
 
-	assert(loop->isLoopSimplifyForm() && "expecting loop in sinplify form: use loop-simplify!");
-	serializeLoop(InputVector, **loop, Func);
+	assert((*loop)->isLoopSimplifyForm() && "expecting loop in sinplify form: use loop-simplify!");
+	//serializeLoop(InputVector, **loop, Func);
   }
 
   for(auto loop : allLoopsVector) {
@@ -379,7 +387,7 @@ static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func
   	
   	if(!InputBrs.empty()) {
 
-		std::map<llvm::BasicBlock*,std:vector<llvm:Value*>> applyBranchLS;
+		std::map<llvm::BasicBlock*,std::vector<llvm::Value*>> applyBranchLS;
 		std::map<llvm::BasicBlock*,llvm::Value*> applyBranchCmp;
 		std::map<llvm::BasicBlock*,llvm::Value*> applyBranchPhi;
 		std::map<llvm::BasicBlock*,llvm::Value*> applyBranchInit;
@@ -452,13 +460,13 @@ static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func
 						
 								for(auto brB = InputBrs.begin(); brB != InputBrs.end(); ++brB) {
 
-									tempApplyBranch.clear();
+									tempApplyBranchLS.clear();
 							
 	  								if(std::find(UsersVector.begin(), UsersVector.end(), (*brB)->getCondition()) != UsersVector.end())  {
 	  								
 										//-----------------------------------------------------------------------------
 
-										applyBranchCmp.insert(std::make_pair((*brB)->getParent(), ((*brB)->getCondition())->clone()));
+										applyBranchCmp.insert(std::make_pair((*brB)->getParent(), cast<Instruction>((*brB)->getCondition())->clone()));
 
 										for(auto temp : UsersVector) {
 											if(llvm::LoadInst::classof(temp) || llvm::StoreInst::classof(temp)) tempApplyBranchLS.push_back(temp);
@@ -567,7 +575,7 @@ static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func
 								
 										} while(size != UsesVector.size() || i < size );
 
-										applyBranch.insert(std::make_pair((*brB)->getParent(), tempApplyBranch));
+										applyBranchLS.insert(std::make_pair((*brB)->getParent(), tempApplyBranchLS));
 	  								}
 								}
   							}
@@ -590,29 +598,23 @@ static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func
 
 		for(auto pair = applyBranchLS.begin(); pair != applyBranchLS.end(); ++pair) {
 
-			//2 cmp
-			//1 and
-			//branch sui blocchi
-			//2 blocchi (aggiungere al loop)
+			errs() << *(pair->first) << "-------------------------------------\n"; 
+
+			
 			//end: 1 blocco con branch e cmp di ritorno + nuove phi per valori apply or not
 
 			llvm::BasicBlock* then = llvm::BasicBlock::Create(Func.getContext(), "", &Func);
 			llvm::BasicBlock* els = llvm::BasicBlock::Create(Func.getContext(), "", &Func);
 			llvm::BasicBlock* end = llvm::BasicBlock::Create(Func.getContext(), "", &Func);
 
-			(*loop)->addBasicBlockToLoop(then, LI);
-			(*loop)->addBasicBlockToLoop(els, LI);
-			(*loop)->addBasicBlockToLoop(end, LI);
+			(*loop).addBasicBlockToLoop(then, LI);
+			(*loop).addBasicBlockToLoop(els, LI);
+			(*loop).addBasicBlockToLoop(end, LI);
 
-			builder.setInsertPoint(end);
-			llvm::BranchInst* br = cast<BranchInst>(pair->first()->getTerminator());
-			builder.insert(cast<Instruction>(br->getCondition())->clone());
-			builder.insert(cast<Instruction>(br)->clone());
+			llvm::BranchInst* br = cast<BranchInst>(pair->first->getTerminator());
+			llvm::Value* condbr = br->getCondition();
 
-			cast<Instruction>(br->getCondition())->eraseFromParent();
-			cast<Instruction>(br)->eraseFromParent();
-
-			builder.setInsertPoint(pair->first);
+			builder.SetInsertPoint(pair->first);
 
 			llvm::Value* cmp = applyBranchCmp.find(pair->first)->second;
 			auto pinit = applyBranchInit.find(pair->first);
@@ -634,39 +636,94 @@ static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func
 
 				if(pfin != applyBranchEnd.end()) {
 					cmp2 = builder.Insert(cmp);
-					llvm::Value* cond =builder.CreateAnd(cmp1, cmp2);
+					llvm::Value* cond = builder.CreateAnd(cmp1, cmp2);
 					builder.CreateCondBr(cond, then, els);
 				}
-				else builder.CreateCondBr(cmp1, then, els);
+				else {
+					builder.CreateCondBr(cmp1, then, els);
+					cmp->deleteValue();
+				}
 			}
 			else if(pfin != applyBranchEnd.end())  {
 				cmp2 = builder.Insert(cmp);
 				builder.CreateCondBr(cmp2, then, els);
 			}
 
-			builder.setInsertPoint(then);
+			for(auto inst : pair->second) {
+				if(llvm::StoreInst::classof(inst)) {
+					llvm::StoreInst* store = cast<StoreInst>(inst); 
+					builder.SetInsertPoint(cast<Instruction>(inst));
+					llvm::LoadInst* load = builder.CreateAlignedLoad(store->getPointerOperandType(), store->getPointerOperand(), store->getAlign(), store->isVolatile());
+					//llvm::LoadInst* load = new llvm::LoadInst(store->getPointerOperandType(), store->getPointerOperand(), "", store->isVolatile(), store->getAlign(), store);
+					builder.SetInsertPoint(els);
+					builder.CreateAlignedStore(load, store->getPointerOperand(), store->getAlign(), store->isVolatile());
+					llvm::StoreInst* clone = cast<StoreInst>(store->clone());
+					builder.SetInsertPoint(then);
+					builder.Insert(clone);
+					store->eraseFromParent();
+				}
+				else {
+					std::vector<llvm::Value*> loadUsers;
+					getAllUsers(inst, loadUsers);
+
+					builder.SetInsertPoint(end);
+
+					std::map<llvm::Value*, llvm::Value*> phiToModify;
+
+					for(auto temp : loadUsers) {
+						if(llvm::PHINode::classof(temp) && (*loop).contains(cast<Instruction>(temp))) {
+							llvm::PHINode* phi = cast<PHINode>(temp);
+							for(unsigned i = 0; i < phi->getNumIncomingValues(); i++) {
+								if(std::find(loadUsers.begin(), loadUsers.end(), phi->getIncomingValue(i)) != loadUsers.end()) {
+									llvm::PHINode* newp = builder.CreatePHI(phi->getType(), 2);
+									newp->addIncoming(phi->getIncomingValue(i), then);
+									newp->addIncoming(phi, els);
+									phiToModify.insert(std::make_pair(phi->getIncomingValue(i), newp));
+									break;
+								}
+							}
+						}
+					}
+
+					for(auto tofix = phiToModify.begin(); tofix != phiToModify.end(); ++tofix) {
+						std::vector<llvm::Value*> tofixUsers;
+						getAllUsers(tofix->first, tofixUsers);
+						for(auto t : tofixUsers) {
+							if(llvm::PHINode::classof(t) && t != tofix->second) {
+								llvm::PHINode* p = cast<PHINode>(t);
+								for(unsigned i = 0; i < p->getNumIncomingValues(); i++) {
+									if(p->getIncomingValue(i) == tofix->first) p->setIncomingValue(i, tofix->second); 
+								}
+							}
+						}
+					}
+				}
+			}
+
+			builder.SetInsertPoint(end);
+			llvm::Value* newc = builder.Insert(cast<Instruction>(condbr)->clone());
+			llvm::BranchInst* newbr = cast<BranchInst>(br->clone());
+			newbr->setCondition(newc);
+			builder.Insert(newbr);
+
+			cast<Instruction>(condbr)->eraseFromParent();
+			br->eraseFromParent();
+
+			builder.SetInsertPoint(then);
 			builder.CreateBr(end);
 
-			builder.setInsertPoint(els);
+			builder.SetInsertPoint(els);
 			builder.CreateBr(end);
+
+			for(llvm::BasicBlock& b : Func) {
+				for(llvm::PHINode& p : b.phis()) {
+					p.replaceIncomingBlockWith(pair->first, end);
+				}
+			}
 		}
 		//------------------------------------------------------------
-
-
-		for(i = a; i < b; i++) 			i >= a && i < b	cre
-
-		for(i = a; i <= b; i++)			i >= a && i <= b cre
-
-		for(i = a; i > b; i--)			i > b && i <= a dec
-
-		for(i = a;  >= b7; i--)		i >= b && i <= a dec  
-
-		i ++
-		icmp >= i v
-		br icmp
-
   	}
-  }	
+  }
 }
 
 
@@ -874,9 +931,10 @@ static void printInputsVectorResult(raw_ostream &OutS,
 
 			end->eraseFromParent();
   		
-		}
-  			
+		}	
   	}
+
+	errs() << *bb << "\n";
   }
 }
 
