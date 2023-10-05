@@ -209,6 +209,8 @@ static void serializeLoop(const ResultSecret &InputVector, Loop &Loop, Function 
   	}
   }
 
+
+
   std::vector<llvm::BasicBlock*> queue;
   
   exitBlocks.clear();
@@ -327,6 +329,7 @@ static void serializeLoop(const ResultSecret &InputVector, Loop &Loop, Function 
 		}
   	}
   }
+
 }
 
 static void getAllInnerLoops(llvm::Loop* CurrentLoop, std::vector<llvm::Loop*>& InnerLoops) {
@@ -358,8 +361,15 @@ static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func
   for(auto loop = allLoopsVector.rbegin(); loop != allLoopsVector.rend(); ++loop) {
 
 	assert((*loop)->isLoopSimplifyForm() && "expecting loop in sinplify form: use loop-simplify!");
-	//serializeLoop(InputVector, **loop, Func);
+	serializeLoop(InputVector, **loop, Func);
   }
+
+    std::vector<llvm::Value*> inputsVector;
+	for(auto arg = Func.arg_begin(); arg != Func.arg_end(); ++arg) {
+		getAllUsers(cast<Value>(arg), inputsVector);
+	}
+
+
 
   for(auto loop : allLoopsVector) {
   
@@ -370,15 +380,17 @@ static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func
   	llvm::SmallVector<llvm::BasicBlock*, 8> exitBlocks;
   	loop->getExitBlocks(exitBlocks);
   	
-  	for(auto inst : InputVector) {
-  	
+  	for(auto inst : inputsVector) {
+		
   		if(llvm::Instruction::classof(&*inst) && loop->contains(cast<Instruction>(&*inst)) && llvm::BranchInst::classof(&*inst)) {
   			
   			llvm::BranchInst* br = cast<BranchInst>(&*inst);
   			if(br->isConditional() 
   				&& (std::find(exitBlocks.begin(), exitBlocks.end(), br->getSuccessor(0)) == exitBlocks.end()
   					||  std::find(exitBlocks.begin(), exitBlocks.end(), br->getSuccessor(1)) == exitBlocks.end()))
-  				InputBrs.push_back(br);
+					{
+  						InputBrs.push_back(br);
+					}
   		}
   	}
 
@@ -388,7 +400,8 @@ static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func
   	if(!InputBrs.empty()) {
 
 		std::map<llvm::BasicBlock*,std::vector<llvm::Value*>> applyBranchLS;
-		std::map<llvm::BasicBlock*,llvm::Value*> applyBranchCmp;
+		std::map<llvm::BasicBlock*,std::vector<llvm::Value*>> applyBranchCmp;
+		std::map<llvm::BasicBlock*,llvm::CmpInst::Predicate> applyBranchCmpPred;
 		std::map<llvm::BasicBlock*,llvm::Value*> applyBranchPhi;
 		std::map<llvm::BasicBlock*,llvm::Value*> applyBranchInit;
 		std::map<llvm::BasicBlock*,llvm::Value*> applyBranchEnd;
@@ -461,12 +474,14 @@ static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func
 								for(auto brB = InputBrs.begin(); brB != InputBrs.end(); ++brB) {
 
 									tempApplyBranchLS.clear();
-							
+
 	  								if(std::find(UsersVector.begin(), UsersVector.end(), (*brB)->getCondition()) != UsersVector.end())  {
 	  								
 										//-----------------------------------------------------------------------------
-
-										applyBranchCmp.insert(std::make_pair((*brB)->getParent(), cast<Instruction>((*brB)->getCondition())->clone()));
+										std::vector<llvm::Value*> inlineVector = {cast<Instruction>((*brB)->getCondition())->getOperand(0), cast<Instruction>((*brB)->getCondition())->getOperand(1)};
+										applyBranchCmp.insert(std::make_pair((*brB)->getParent(), inlineVector));
+									
+										applyBranchCmpPred.insert(std::make_pair((*brB)->getParent(), cast<ICmpInst>((*brB)->getCondition())->getPredicate()));
 
 										for(auto temp : UsersVector) {
 											if(llvm::LoadInst::classof(temp) || llvm::StoreInst::classof(temp)) tempApplyBranchLS.push_back(temp);
@@ -483,7 +498,7 @@ static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func
 	  									for(unsigned  j = 0; j < cmp->getNumOperands(); j++) {
 	  								
 	  										if(std::find(UsersVector.begin(), UsersVector.end(), cmp->getOperand(j)) == UsersVector.end() 
-	  											&& std::find(InputVector.begin(), InputVector.end(), cmp->getOperand(j)) != InputVector.end()) {
+	  											&& std::find(inputsVector.begin(), inputsVector.end(), cmp->getOperand(j)) != inputsVector.end()) {
 												
 												//--------------------------
 												applyBranchEnd.insert(std::make_pair((*brB)->getParent(), cmp->getOperand(j)));
@@ -534,8 +549,8 @@ static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func
 												llvm::PHINode* phi = cast<PHINode>(UsesVector[i]);
 												for(unsigned j = 0; j < phi->getNumIncomingValues(); j++) {
 													if(phi->getIncomingBlock(j) == loop->getLoopPreheader()) {
-														if(std::find(InputVector.begin(), InputVector.end(), phi->getIncomingValue(j)) 
-															!= InputVector.end()) {
+														if(std::find(inputsVector.begin(), inputsVector.end(), phi->getIncomingValue(j)) 
+															!= inputsVector.end()) {
 															
 															//--------------------------------------------------------
 
@@ -598,7 +613,7 @@ static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func
 
 		for(auto pair = applyBranchLS.begin(); pair != applyBranchLS.end(); ++pair) {
 
-			errs() << *(pair->first) << "-------------------------------------\n"; 
+			//errs() << *(pair->first) << "-------------------------------------\n"; 
 
 			
 			//end: 1 blocco con branch e cmp di ritorno + nuove phi per valori apply or not
@@ -616,7 +631,13 @@ static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func
 
 			builder.SetInsertPoint(pair->first);
 
-			llvm::Value* cmp = applyBranchCmp.find(pair->first)->second;
+
+			llvm::Value* LHS = applyBranchCmp.find(pair->first)->second[0];
+			llvm::Value* RHS = applyBranchCmp.find(pair->first)->second[1];
+			llvm::CmpInst::Predicate Pred = applyBranchCmpPred.find(pair->first)->second;
+			llvm::ICmpInst* cmpInst = new llvm::ICmpInst(Pred, LHS, RHS, "");
+			llvm::Value* cmp = cast<Value>(cmpInst);
+
 			auto pinit = applyBranchInit.find(pair->first);
 			auto pfin = applyBranchEnd.find(pair->first);
 			auto pphi= applyBranchPhi.find(pair->first);
@@ -649,6 +670,9 @@ static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func
 				builder.CreateCondBr(cmp2, then, els);
 			}
 
+
+
+
 			for(auto inst : pair->second) {
 				if(llvm::StoreInst::classof(inst)) {
 					llvm::StoreInst* store = cast<StoreInst>(inst); 
@@ -661,6 +685,7 @@ static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func
 					builder.SetInsertPoint(then);
 					builder.Insert(clone);
 					store->eraseFromParent();
+	
 				}
 				else {
 					std::vector<llvm::Value*> loadUsers;
@@ -701,7 +726,7 @@ static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func
 			}
 
 			builder.SetInsertPoint(end);
-			llvm::Value* newc = builder.Insert(cast<Instruction>(condbr)->clone());
+			llvm::Value* newc = builder.CreateICmp(cast<ICmpInst>(condbr)->getPredicate(),cast<Instruction>(condbr)->getOperand(0),cast<Instruction>(condbr)->getOperand(1));
 			llvm::BranchInst* newbr = cast<BranchInst>(br->clone());
 			newbr->setCondition(newc);
 			builder.Insert(newbr);
@@ -720,6 +745,10 @@ static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func
 					p.replaceIncomingBlockWith(pair->first, end);
 				}
 			}
+			//errs() << *(pair->first) << "-------------------------------------\n"; 
+
+			//errs() << *then << "\n";
+			//errs() << *els << "\n";
 		}
 		//------------------------------------------------------------
   	}
@@ -729,14 +758,14 @@ static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func
 
 static void printInputsVectorResult(raw_ostream &OutS,
                                      const ResultSecret &InputVector, Function &Func) {
- 
+										
   modifyNumCyclesLoops(InputVector, Func); 
   
   llvm::DominatorTree DT (Func);
   llvm::LoopInfo LI (DT);
   
   std::map<llvm::BasicBlock*, llvm::BasicBlock*> bbsMap;
-  llvm::SmallVector<llvm::BasicBlock*, 8> exitBlocks; 
+  llvm::SmallVector<llvm::BasicBlock*, 64> exitBlocks; 
   std::vector<llvm::BasicBlock*> tempVector;
   
   for(auto bb = Func.begin(); bb != Func.end(); ++bb) tempVector.push_back(&*bb);
@@ -890,6 +919,7 @@ static void printInputsVectorResult(raw_ostream &OutS,
 						
 	  					for(unsigned j = 0; j < queue.size(); j++) {
 	  						llvm::BasicBlock* x = queue[j];
+							
 	  						builder.SetInsertPoint(x);
 	  						end = x->getTerminator();
 	  						end->eraseFromParent();
@@ -898,6 +928,7 @@ static void printInputsVectorResult(raw_ostream &OutS,
 	  					}
   					}
   					else builder.CreateBr(tempVector[i+1]);
+					queue.clear();
   				}
   			}
   		}
@@ -909,7 +940,9 @@ static void printInputsVectorResult(raw_ostream &OutS,
 			std::vector<llvm::Instruction*> toerase;
 		
 			for(auto inst = bb->begin(); inst != bb->end(); ++inst) {
-				if(llvm::PHINode::classof(&*inst)) toerase.push_back(&*inst);  
+				if(llvm::PHINode::classof(&*inst)) {
+					toerase.push_back(&*inst); 
+				}
 			}
 			
 			for(auto inst : toerase) inst->eraseFromParent();
@@ -932,10 +965,15 @@ static void printInputsVectorResult(raw_ostream &OutS,
 			end->eraseFromParent();
   		
 		}	
+		
   	}
 
-	errs() << *bb << "\n";
+  }
+  
+  for(unsigned i = 0; i < tempVector.size(); i++) {
+	errs() << *(tempVector[i]) << "\n";
+  }
+  for(auto pair = bbsMap.begin(); pair != bbsMap.end(); ++pair) {
+	errs() << *(pair->second) << "\n";
   }
 }
-
-

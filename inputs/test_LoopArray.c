@@ -14,9 +14,19 @@ int foo(int a) {
 	int array[8];
 	int res = 0;
 	
-	for(int i = 0; i <= a; i++) {
-		array[i] = i * 2;
+	if(a>10)  {
+		//res = a + 8;
+		printf("ciao");
 	}
+	else {
+		
+			for(int i = 0; i <= a; i++) {
+				array[i] = i * 2;
+			}
+		
+	
+	}
+	
 	
 	for(int i = a; i > 2; i--) {
 		res += array[i];
