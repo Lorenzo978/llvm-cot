@@ -10,6 +10,7 @@
 #include "llvm/IR/Dominators.h"
 #include "llvm/Analysis/LoopInfo.h"
 #include "llvm/ADT/SmallVector.h"
+#include "llvm/Analysis/PostDominators.h"
 #include <map>
 
 using namespace llvm;
@@ -21,22 +22,23 @@ llvm::AnalysisKey Secret::Key;
 
 Secret::Result Secret::generateInputVector(llvm::Function &Func) {
 
-  std::vector<llvm::Value*> inputsVector;
-  for(auto arg = Func.arg_begin(); arg != Func.arg_end(); ++arg) {
-      inputsVector.push_back(cast<Value>(arg));
-  }
-  
-  long unsigned int cur = inputsVector.size(), i = 0;
-  
-  do {
-    	cur = inputsVector.size();
-    	llvm::Value* val = inputsVector[i];
-    	for(auto istr = val->user_begin(); istr != val->user_end(); ++istr) {
-      		if(std::find(inputsVector.begin(),inputsVector.end(),*istr) == inputsVector.end()) 
-      			inputsVector.push_back(*istr);
-    	}
-    	i++;
-  } while(inputsVector.size() != cur || i < cur);
+
+	std::vector<llvm::Value*> inputsVector;
+	for(auto arg = Func.arg_begin(); arg != Func.arg_end(); ++arg) {
+		inputsVector.push_back(cast<Value>(arg));
+	}
+	
+	long unsigned int cur = inputsVector.size(), i = 0;
+	
+	do {
+			cur = inputsVector.size();
+			llvm::Value* val = inputsVector[i];
+			for(auto istr = val->user_begin(); istr != val->user_end(); ++istr) {
+				if(std::find(inputsVector.begin(),inputsVector.end(),*istr) == inputsVector.end()) 
+					inputsVector.push_back(*istr);
+			}
+			i++;
+	} while(inputsVector.size() != cur || i < cur);
   
   return inputsVector;
 }
@@ -47,13 +49,21 @@ Secret::Result Secret::run(llvm::Function &Func, llvm::FunctionAnalysisManager &
 
 PreservedAnalyses InputsVectorPrinter::run(Function &Func, FunctionAnalysisManager &FAM) {
   
-  auto &inputsVector = FAM.getResult<Secret>(Func);
+	auto &inputsVector = FAM.getResult<Secret>(Func);
 
-  OS << "Printing analysis 'Secret Pass' for function '"
-     << Func.getName() << "':\n";
+	OS << "Printing analysis 'Secret Pass' for function '"
+		<< Func.getName() << "':\n";
 
-  printInputsVectorResult(OS, inputsVector, Func);
-  return PreservedAnalyses::all();
+
+	PostDominatorTree PDT(Func);
+	DominatorTree DT(Func);
+
+
+	PDT.print(OS);
+	DT.print(OS);
+
+	printInputsVectorResult(OS, inputsVector, Func);
+	return PreservedAnalyses::all();
 }
 
 //-----------------------------------------------------------------------------
@@ -755,225 +765,101 @@ static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func
   }
 }
 
+static void recursiveSerialization(llvm::BasicBlock* bb, std::map<llvm::BasicBlock*, llvm::BasicBlock*>& serializedCode, std::vector<llvm::BranchInst*>& condBranch, std::vector<llvm::Loop*>& allLoopsVector, llvm::PostDominatorTree& PDT)
+{
+	llvm::Instruction* bbTerminator = bb->getTerminator();
+
+	errs() << *bbTerminator << "\n";
+	if(llvm::BranchInst::classof(bbTerminator))
+	{
+		llvm::BranchInst* brTerminator = llvm::cast<BranchInst>(bbTerminator);
+		if(brTerminator->isConditional())
+		{
+			// aggiungere se branch ha a mappa con successore = 1
+
+			llvm::Loop* bbLoop = NULL;
+			for(auto loop : allLoopsVector)
+			{
+				llvm::BasicBlock* latchBlock = loop->getLoopLatch();
+
+    			if (latchBlock == bb) {
+					bbLoop = loop;
+					break;
+				}
+			}
+
+			if(bbLoop != NULL)
+			{
+				llvm::SmallVector<llvm::BasicBlock*, 8> exitBlocks; 
+				bbLoop->getExitBlocks(exitBlocks);
+				serializedCode.insert(std::make_pair(bb, exitBlocks[0]));
+				recursiveSerialization(exitBlocks[0], serializedCode, condBranch, allLoopsVector, PDT);
+			}
+			else
+			{
+				condBranch.push_back(brTerminator);
+				serializedCode.insert(std::make_pair(bb, brTerminator->getSuccessor(1)));
+				recursiveSerialization(brTerminator->getSuccessor(1), serializedCode, condBranch, allLoopsVector, PDT);
+			}
+
+		}
+		else
+		{
+			serializedCode.insert(std::make_pair(bb, brTerminator->getSuccessor(0)));
+			recursiveSerialization(brTerminator->getSuccessor(0), serializedCode, condBranch, allLoopsVector, PDT);
+		}
+	}
+	else
+	{
+		if(llvm::ReturnInst::classof(bbTerminator))
+		{
+			if(!condBranch.empty())
+			{
+				llvm::BranchInst* lastBranch = condBranch.back();
+   				llvm::DomTreeNodeBase<llvm::BasicBlock>* node = PDT.getNode(lastBranch->getParent());
+
+				if (node) {
+					llvm::DomTreeNodeBase<llvm::BasicBlock>* IPDNode = node->getIDom();
+					
+					if (IPDNode) {
+  						for(auto pair = serializedCode.begin(); pair != serializedCode.end(); ++pair) {
+							if(pair->second == IPDNode->getBlock())
+							{
+								pair->second = lastBranch->getSuccessor(0);
+								break;
+							}
+						}
+						
+					}
+				}	
+				condBranch.pop_back();
+				recursiveSerialization(lastBranch->getSuccessor(0), serializedCode, condBranch, allLoopsVector, PDT);
+
+			}
+		}
+	}
+}
+
 
 static void printInputsVectorResult(raw_ostream &OutS,
                                      const ResultSecret &InputVector, Function &Func) {
 										
-  modifyNumCyclesLoops(InputVector, Func); 
-  
-  llvm::DominatorTree DT (Func);
-  llvm::LoopInfo LI (DT);
-  
-  std::map<llvm::BasicBlock*, llvm::BasicBlock*> bbsMap;
-  llvm::SmallVector<llvm::BasicBlock*, 64> exitBlocks; 
-  std::vector<llvm::BasicBlock*> tempVector;
-  
-  for(auto bb = Func.begin(); bb != Func.end(); ++bb) tempVector.push_back(&*bb);
-  
-  for(auto bb : tempVector) 
-  {
-	bool flag = false;
-	exitBlocks.clear();
-	for(auto loop = LI.begin(); loop != LI.end() && flag != true; ++loop) {
-		if((*loop)->getLoopPreheader() == bb){
-			(*loop)->getExitBlocks(exitBlocks);
-			bbsMap.insert(std::make_pair(bb, llvm::BasicBlock::Create(Func.getContext(), "", &Func)));
-			bbsMap.insert(std::make_pair(exitBlocks[0], llvm::BasicBlock::Create(Func.getContext(), "", &Func)));
-			flag = true;
-		}
-		
-		if((*loop)->contains(bb)) flag=true;
-	}	
-  	
-  	
-  	if(!flag && bbsMap.find(bb) == bbsMap.end()) bbsMap.insert(std::make_pair(bb, llvm::BasicBlock::Create(Func.getContext(), "", &Func)));
-  }
-  
-  IRBuilder<> builder (bbsMap.begin()->second);
-  
-  for(auto pair = bbsMap.begin(); pair != bbsMap.end(); ++pair) {
-  	exitBlocks.clear();
+  //modifyNumCyclesLoops(InputVector, Func); 
+	llvm::DominatorTree DT (Func);
+	llvm::LoopInfo LI (DT);
+	llvm::PostDominatorTree PDT (Func);
 
-  
-  	builder.SetInsertPoint(pair->second);
-  	
-  	bool flag = false;
-  	
-  	for(auto loop = LI.begin(); loop != LI.end() && flag != true; ++loop) {
-  		if((*loop)->getLoopPreheader() == pair->first)
-  		{
-  			(*loop)->getExitBlocks(exitBlocks);
-  			flag = true;
-  		}
-  	}	
-  	
-  	if(flag)
-  	{
-		auto bb3 = bbsMap.find(exitBlocks[0]);
-		builder.CreateBr(bb3->second);
-  	}
-  	else
-  	{
-  	  	for(auto inst = pair->first->begin(); inst != pair->first->end(); ++inst) {
-	  		if(llvm::BranchInst::classof(&*inst)) {
-	  			if(cast<BranchInst>(&*inst)->isConditional()) {
-	  				llvm::BranchInst* br = cast<BranchInst>(&*inst);
-	  				auto bb1 = bbsMap.find(br->getSuccessor(0));
-	  				auto bb2 = bbsMap.find(br->getSuccessor(1));
-	  				builder.CreateCondBr(br->getCondition(), bb1->second, bb2->second);
-	  			}
-	  			else {
-	  				llvm::BranchInst* br = cast<BranchInst>(&*inst);
-	  				auto bb3 = bbsMap.find(br->getSuccessor(0));
-	  				builder.CreateBr(bb3->second);
-	  			}
-	  		}
-	  		else if(llvm::PHINode::classof(&*inst) ) {
-	  			llvm::PHINode* phi = cast<PHINode>(&*inst);
-	  			llvm::PHINode* pnew =  builder.CreatePHI(phi->getType(), phi->getNumIncomingValues());
-	  			
-	  			for(unsigned i = 0; i < phi->getNumIncomingValues(); i++) {
-	  				auto bbPhi = bbsMap.find(phi->getIncomingBlock(i));
-	  				pnew->addIncoming(phi->getIncomingValue(i),  bbPhi->second);
-	  			}
-	  			
-	  			phi->replaceAllUsesWith(pnew);
-	  		}
-	  		else if(llvm::ReturnInst::classof(&*inst))
-	  			builder.CreateRet(cast<ReturnInst>(&*inst)->getReturnValue());
-	  		else if(llvm::SwitchInst::classof(&*inst)) {
-	  			llvm::SwitchInst* sw = cast<SwitchInst>(&*inst);
-	  			auto def =  bbsMap.find(sw->getDefaultDest());
-	  			llvm::SwitchInst* nsw = builder.CreateSwitch(sw->getCondition(), def->second, sw->getNumCases());
-	  			for(unsigned i = 0; i < sw->getNumSuccessors(); i++) {
-	  				llvm::BasicBlock* next = sw->getSuccessor(i);
-	  				if(next != def->first) {
-	  					auto bb = bbsMap.find(next);
-	  					nsw->addCase(sw->findCaseDest(next), bb->second);
-	  				}	
-	  			}
-	  		}
-	  	}
-  	}
-  }
-  
-  std::vector<llvm::BasicBlock*> queue;
-  
-  exitBlocks.clear();
-  auto start = bbsMap.find(&(Func.getEntryBlock()));
-   
-  std::map<llvm::Loop*, llvm::SmallVector<llvm::BasicBlock*, 8>> exitBlockMap;
-  std::map<llvm::Loop*, unsigned> exitSizeMap;
+	std::vector<llvm::BranchInst*> condBranch;
+	std::vector<llvm::Loop*> allLoopsVector;
+	std::map<llvm::BasicBlock*, llvm::BasicBlock*> serializedCode;
+	for(auto loop = LI.begin(); loop != LI.end(); ++loop)  getAllInnerLoops(*loop, allLoopsVector);
 
-  for(unsigned i = 0; i < tempVector.size(); i++) {
+	recursiveSerialization(&(Func.getEntryBlock()), serializedCode, condBranch, allLoopsVector, PDT);
 
-  	llvm::BasicBlock* bb = tempVector[i];
+  	for(auto pair = serializedCode.begin(); pair != serializedCode.end(); ++pair) {
+		errs() << *(pair->first) << " -> ";
+		errs() << *(pair->second) << "\n";
+	}
 
-  	bool flag = false;
-	bool isInLoop = false;
-  	for(auto loop = LI.begin(); loop != LI.end() && flag != true; ++loop) {
-  		
-  		if(bb == (*loop)->getLoopPreheader()) {
-  			flag = true;
-			llvm::SmallVector<llvm::BasicBlock*, 8> tempExitBlock;
-  			(*loop)->getExitBlocks(tempExitBlock);
-			exitBlockMap.insert(std::make_pair((*loop), tempExitBlock));
-			exitSizeMap.insert(std::make_pair((*loop), tempExitBlock.size()));
-  		}
 
-		if((*loop)->contains(bb))
-			isInLoop = true;
-  	}
-  	
-  	if(std::any_of(exitSizeMap.begin(), exitSizeMap.end(),[](const auto& pair) { return pair.second > 0; })) {
-  		flag = false;
-		llvm::Loop* loopKey;
-		llvm::SmallVector<llvm::BasicBlock*, 8> tempExitBlock;
-  		for(auto loop = LI.begin(); loop != LI.end() && flag != true; ++loop) {
-  			if((*loop)->contains(bb) || (*loop)->getLoopPreheader() == bb ) 
-			{
-				loopKey = *loop;
-				flag = true; 
-			}
-
-			(*loop)->getExitBlocks(tempExitBlock);
-  			if(std::find(tempExitBlock.begin(), tempExitBlock.end(), bb) != tempExitBlock.end())
-			{
-				loopKey = *loop;
-				flag = true; 
-			}
-  		}
-
-  		if(flag) {
-	  		auto foundExitBlocks = exitBlockMap.find(loopKey);
-  			if(std::find(foundExitBlocks->second.begin(), foundExitBlocks->second.end(), bb) != foundExitBlocks->second.end()) {
-  				exitSizeMap[loopKey]--;
-  				if(exitSizeMap[loopKey] == 0) {
-  				
-  					builder.SetInsertPoint(bb);
-	  				llvm::Instruction* end = bb->getTerminator();
-					end->eraseFromParent();
-					
-  					if(queue.size() > 0){
-						builder.CreateBr(queue[0]);
-						
-	  					for(unsigned j = 0; j < queue.size(); j++) {
-	  						llvm::BasicBlock* x = queue[j];
-							
-	  						builder.SetInsertPoint(x);
-	  						end = x->getTerminator();
-	  						end->eraseFromParent();
-	  						if(j == queue.size() - 1) builder.CreateBr(tempVector[i+1]);
-	  						else builder.CreateBr(queue[j+1]);
-	  					}
-  					}
-  					else builder.CreateBr(tempVector[i+1]);
-					queue.clear();
-  				}
-  			}
-  		}
-  		else queue.push_back(bb);
-  	}
-  	else {
-		if(!isInLoop)
-		{
-			std::vector<llvm::Instruction*> toerase;
-		
-			for(auto inst = bb->begin(); inst != bb->end(); ++inst) {
-				if(llvm::PHINode::classof(&*inst)) {
-					toerase.push_back(&*inst); 
-				}
-			}
-			
-			for(auto inst : toerase) inst->eraseFromParent();
-			
-			toerase.clear();	
-			builder.SetInsertPoint(bb);
-			
-			llvm::Instruction* end = bb->getTerminator();
-			
-			if(llvm::ReturnInst::classof(end))
-				builder.CreateBr(start->second);
-			else
-			{
-				if(i == tempVector.size() - 1) {
-					builder.CreateBr(start->second);
-				}
-				else  builder.CreateBr(tempVector[i+1]);  
-			}
-
-			end->eraseFromParent();
-  		
-		}	
-		
-  	}
-
-  }
-  
-  for(unsigned i = 0; i < tempVector.size(); i++) {
-	errs() << *(tempVector[i]) << "\n";
-  }
-  for(auto pair = bbsMap.begin(); pair != bbsMap.end(); ++pair) {
-	errs() << *(pair->second) << "\n";
-  }
 }
