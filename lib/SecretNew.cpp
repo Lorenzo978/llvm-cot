@@ -18,21 +18,6 @@ llvm::AnalysisKey Secret::Key;
 Secret::Result Secret::generateInputVector(llvm::Function &Func) {
 
   std::vector<llvm::Value*> inputsVector;
-  for(auto arg = Func.arg_begin(); arg != Func.arg_end(); ++arg) {
-      inputsVector.push_back(cast<Value>(arg));
-  }
-
-  long unsigned int cur = inputsVector.size(), i=0;
-
-  do {
-    cur = inputsVector.size();
-    llvm::Value* val = inputsVector[i];
-    for(auto istr = val->user_begin(); istr != val->user_end(); ++istr) {
-      if(std::find(inputsVector.begin(),inputsVector.end(),*istr) == inputsVector.end())
-      	inputsVector.push_back(*istr);
-    }
-    i++;
-  } while(inputsVector.size() != cur || i < cur);
 
   return inputsVector;
 }
@@ -47,20 +32,6 @@ PreservedAnalyses InputsVectorPrinter::run(Function &Func, FunctionAnalysisManag
 
   OS << "Printing analysis 'Secret Pass' for function '"
      << Func.getName() << "':\n";
-
-	/*for(auto BB = Func->begin(); BB != Func->end(); ++BB)
-	{
-		for(auto Inst = BB->begin(); Inst != BB->end(); ++Inst)
-		{
-			if(Inst->isConditional())
-			{
-				if(std::find(inputsVector.begin(),inputsVector.end(),cast<Value>(Istr)) == inputsVector.end())
-				{
-					
-				}
-			}
-		} 
-	}*/
 
   printInputsVectorResult(OS, inputsVector, Func);
   return PreservedAnalyses::all();
@@ -111,35 +82,12 @@ static void printInputsVectorResult(raw_ostream &OutS,
   OutS << "=================================================" << "\n";
   OutS << "LLVM-TUTOR: InputVector results\n";
   OutS << "=================================================\n";
-  for (auto i : InputVector)
-    OutS << *i << "\n";
-  OutS << "-------------------------------------------------\n";
-
-
-	llvm::Instruction* End = Func.getEntryBlock().getTerminator();
-	
-	llvm::BasicBlock* NewEntry = Func.getEntryBlock().splitBasicBlockBefore(End);
-	
-	llvm::Instruction* NewEnd = NewEntry->getTerminator();
-	
-	std::vector<llvm::Instruction*> TempVector;
-	
-	for (auto Bblock = Func.begin(); Bblock != Func.end(); ++Bblock) {
-	
-		if(&*Bblock != NewEntry) { 
-			for (auto Inst = (*Bblock).begin(); Inst != (*Bblock).end(); ++Inst) {
-				if(! (llvm::BranchInst::classof(&*Inst) || llvm::CmpInst::classof(&*Inst) || llvm::PHINode::classof(&*Inst) || llvm::ReturnInst::classof(&*Inst) || 		llvm::SelectInst::classof(&*Inst) || llvm::SwitchInst::classof(&*Inst))) 
-					TempVector.push_back(&*Inst);
-			}
-			
-			for (auto i : TempVector) {
-				i->moveBefore(NewEnd);
-				NewEnd = i;
-			}
-			
-			TempVector.clear();
-
-		}
+  
+  int i = 0;
+	for(auto bb = Func.begin(); bb != Func.end(); ++bb) {
+		std::string name = std::to_string(i);
+		(*bb).setName(name);
+    OutS << *bb << "\n";
 	}
   
 }

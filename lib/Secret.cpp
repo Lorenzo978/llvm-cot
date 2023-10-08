@@ -13,6 +13,8 @@
 #include "llvm/Analysis/PostDominators.h"
 #include <map>
 
+#include <string>
+
 using namespace llvm;
 
 static void printInputsVectorResult(raw_ostream &OutS,
@@ -765,76 +767,135 @@ static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func
   }
 }
 
-static void recursiveSerialization(llvm::BasicBlock* bb, std::map<llvm::BasicBlock*, llvm::BasicBlock*>& serializedCode, std::vector<llvm::BranchInst*>& condBranch, std::vector<llvm::Loop*>& allLoopsVector, llvm::PostDominatorTree& PDT)
+struct  newBranch {
+	llvm::Value* cond;
+	llvm::BasicBlock* then;
+	llvm::BasicBlock* els;
+};
+
+static void recursiveSerialization(llvm::BasicBlock* bb, std::map<llvm::BasicBlock*, newBranch>& serializedCode, std::vector<llvm::BranchInst*>& condBranch, std::vector<llvm::Loop*>& allLoopsVector, llvm::PostDominatorTree& PDT)
 {
 	llvm::Instruction* bbTerminator = bb->getTerminator();
-
-	errs() << *bbTerminator << "\n";
-	if(llvm::BranchInst::classof(bbTerminator))
+	//errs() << *bbTerminator << "\n";
+	if(serializedCode.find(bb) != serializedCode.end() || llvm::ReturnInst::classof(bbTerminator))
 	{
-		llvm::BranchInst* brTerminator = llvm::cast<BranchInst>(bbTerminator);
-		if(brTerminator->isConditional())
+		if(!condBranch.empty())
 		{
-			// aggiungere se branch ha a mappa con successore = 1
-
-			llvm::Loop* bbLoop = NULL;
-			for(auto loop : allLoopsVector)
-			{
-				llvm::BasicBlock* latchBlock = loop->getLoopLatch();
-
-    			if (latchBlock == bb) {
-					bbLoop = loop;
-					break;
-				}
-			}
-
-			if(bbLoop != NULL)
-			{
-				llvm::SmallVector<llvm::BasicBlock*, 8> exitBlocks; 
-				bbLoop->getExitBlocks(exitBlocks);
-				serializedCode.insert(std::make_pair(bb, exitBlocks[0]));
-				recursiveSerialization(exitBlocks[0], serializedCode, condBranch, allLoopsVector, PDT);
-			}
-			else
-			{
-				condBranch.push_back(brTerminator);
-				serializedCode.insert(std::make_pair(bb, brTerminator->getSuccessor(1)));
-				recursiveSerialization(brTerminator->getSuccessor(1), serializedCode, condBranch, allLoopsVector, PDT);
-			}
-
-		}
-		else
-		{
-			serializedCode.insert(std::make_pair(bb, brTerminator->getSuccessor(0)));
-			recursiveSerialization(brTerminator->getSuccessor(0), serializedCode, condBranch, allLoopsVector, PDT);
-		}
-	}
-	else
-	{
-		if(llvm::ReturnInst::classof(bbTerminator))
-		{
-			if(!condBranch.empty())
-			{
+			do {
 				llvm::BranchInst* lastBranch = condBranch.back();
-   				llvm::DomTreeNodeBase<llvm::BasicBlock>* node = PDT.getNode(lastBranch->getParent());
+				llvm::DomTreeNodeBase<llvm::BasicBlock>* node = PDT.getNode(lastBranch->getParent());
 
 				if (node) {
 					llvm::DomTreeNodeBase<llvm::BasicBlock>* IPDNode = node->getIDom();
 					
 					if (IPDNode) {
-  						for(auto pair = serializedCode.begin(); pair != serializedCode.end(); ++pair) {
-							if(pair->second == IPDNode->getBlock())
-							{
-								pair->second = lastBranch->getSuccessor(0);
+
+						llvm::BasicBlock* postDom = IPDNode->getBlock();
+						if(serializedCode.find(postDom) != serializedCode.end() || llvm::ReturnInst::classof(postDom->getTerminator())) {
+
+							if(lastBranch->getSuccessor(0) != postDom) {
+								for(auto pair = serializedCode.begin(); pair != serializedCode.end(); ++pair) {
+									if(pair->second.then == postDom)
+									{
+										newBranch newbr;
+											newbr.cond = NULL ;
+											newbr.then = lastBranch->getSuccessor(0);
+											newbr.els = NULL;
+										pair->second = newbr;
+										break;
+									}
+								}
+
+								condBranch.pop_back();
+								recursiveSerialization(lastBranch->getSuccessor(0), serializedCode, condBranch, allLoopsVector, PDT);
 								break;
 							}
+							else condBranch.pop_back();
 						}
-						
-					}
-				}	
-				condBranch.pop_back();
-				recursiveSerialization(lastBranch->getSuccessor(0), serializedCode, condBranch, allLoopsVector, PDT);
+						else if(serializedCode.find(postDom) == serializedCode.end()) {
+							bool find = false;
 
+							auto cur = serializedCode.find(lastBranch->getParent());
+							do {
+								for(auto p = serializedCode.begin(); p != serializedCode.end(); ++p) {
+									if(p->first != cur->first && p->second.then == cur->second.then) {
+										find = true;
+										break;
+									}
+								}
+
+								if(!find) cur = serializedCode.find(cur->second.then);
+								
+							} while(!find);
+
+							if(find) {
+								newBranch newbr;
+									newbr.cond =  lastBranch->getCondition();
+									newbr.then = lastBranch->getSuccessor(0);
+									newbr.els = cur->second.then;
+							
+								cur->second = newbr;
+
+								condBranch.pop_back();
+								recursiveSerialization(lastBranch->getSuccessor(0), serializedCode, condBranch, allLoopsVector, PDT);
+								break;
+							}
+							else condBranch.pop_back();
+						}
+					}
+				}
+			} while(!condBranch.empty());
+		}
+	}
+	else 
+	{
+		if(llvm::BranchInst::classof(bbTerminator))
+		{
+			llvm::BranchInst* brTerminator = llvm::cast<BranchInst>(bbTerminator);
+			if(brTerminator->isConditional())
+			{
+				llvm::Loop* bbLoop = NULL;
+				for(auto loop : allLoopsVector)
+				{
+					llvm::BasicBlock* latchBlock = loop->getLoopLatch();
+
+					if (latchBlock == bb) {
+						bbLoop = loop;
+						break;
+					}
+				}
+
+				if(bbLoop != NULL)
+				{
+					llvm::SmallVector<llvm::BasicBlock*, 8> exitBlocks; 
+					bbLoop->getExitBlocks(exitBlocks);
+					newBranch newbr;
+						newbr.cond =  brTerminator->getCondition();
+						newbr.then = brTerminator->getSuccessor(0);
+						newbr.els = brTerminator->getSuccessor(1);
+					serializedCode.insert(std::make_pair(bb, newbr));
+					recursiveSerialization(exitBlocks[0], serializedCode, condBranch, allLoopsVector, PDT);
+				}
+				else
+				{
+					condBranch.push_back(brTerminator);
+					newBranch newbr;
+						newbr.cond = NULL;
+						newbr.then = brTerminator->getSuccessor(1);
+						newbr.els = NULL;
+					serializedCode.insert(std::make_pair(bb, newbr));
+					recursiveSerialization(brTerminator->getSuccessor(1), serializedCode, condBranch, allLoopsVector, PDT);
+				}
+
+			}
+			else
+			{
+				newBranch newbr;
+						newbr.cond = NULL;
+						newbr.then = brTerminator->getSuccessor(0);
+						newbr.els = NULL;
+				serializedCode.insert(std::make_pair(bb, newbr));
+				recursiveSerialization(brTerminator->getSuccessor(0), serializedCode, condBranch, allLoopsVector, PDT);
 			}
 		}
 	}
@@ -845,21 +906,29 @@ static void printInputsVectorResult(raw_ostream &OutS,
                                      const ResultSecret &InputVector, Function &Func) {
 										
   //modifyNumCyclesLoops(InputVector, Func); 
+
+	int i = 0;
+	for(auto bb = Func.begin(); bb != Func.end(); ++bb) {
+		std::string name = std::to_string(i);
+		(*bb).setName(name);
+	}
+
 	llvm::DominatorTree DT (Func);
 	llvm::LoopInfo LI (DT);
 	llvm::PostDominatorTree PDT (Func);
 
 	std::vector<llvm::BranchInst*> condBranch;
 	std::vector<llvm::Loop*> allLoopsVector;
-	std::map<llvm::BasicBlock*, llvm::BasicBlock*> serializedCode;
+	std::map<llvm::BasicBlock*, newBranch> serializedCode;
 	for(auto loop = LI.begin(); loop != LI.end(); ++loop)  getAllInnerLoops(*loop, allLoopsVector);
 
 	recursiveSerialization(&(Func.getEntryBlock()), serializedCode, condBranch, allLoopsVector, PDT);
 
   	for(auto pair = serializedCode.begin(); pair != serializedCode.end(); ++pair) {
+		errs() << "\n-------------------------------------------------------\n";
 		errs() << *(pair->first) << " -> ";
-		errs() << *(pair->second) << "\n";
+		if(pair->second.cond != NULL) errs() << "Branch: cond: (" << *(pair->second.cond) << ") \n";
+		if(pair->second.then != NULL) errs() << "Branch: then: (" << pair->second.then->getName() << ")\n";
+		if(pair->second.els != NULL) errs() << "Branch: else: (" << pair->second.els->getName() << ")\n";
 	}
-
-
 }

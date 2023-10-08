@@ -11,26 +11,29 @@
 
 int foo(int a) {
 
-	int array[8];
-	int res = 0;
+	int res = 2;
 	
 	if(a>10)  {
 		res = a + 8;
 		printf("ciao");
 	}
 	else {
-		
-			for(int i = 0; i <= a; i++) {
-				array[i] = i * 2;
+		for(int i = 0; i < 7; i++) {
+			if(a> 5) {
+					printf("ciao");
+					res = res * a;
+					while(res > 0) {
+						res--;
+						printf("quaaa");
+					}
 			}
-		
+			else {
+					printf("ciaooooooooo");
+					res = res + a;
+			}
+		}
 	
 	}
-	
-	
-	for(int i = a; i > 2; i--) {
-		res += array[i];
-	} 
-	
-	return res;
+ 
+  return res;
 }
