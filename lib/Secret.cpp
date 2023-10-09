@@ -1011,6 +1011,7 @@ static void modifyPhis(std::vector<llvm::PHINode*> phis, Function &Func, llvm::D
 		for(auto sel : selects)
 			builder.Insert(sel);
 		
+		phi->replaceAllUsesWith(selects.back());
 		phi->eraseFromParent();
 	}
 
@@ -1087,4 +1088,6 @@ static void printInputsVectorResult(raw_ostream &OutS,
 		else		
 			builder.CreateBr(pair->second.then);
 	}
+
+	errs() << "\n-------------------------------------------------------\n";
 }
