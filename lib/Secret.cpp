@@ -901,79 +901,117 @@ static void recursiveSerialization(llvm::BasicBlock* bb, std::map<llvm::BasicBlo
 	}
 }
 
-static void generateSelect(std::map<std::vector<llvm::BasicBlock*>, llvm::BasicBlock*>& commonDomMap, std::map<std::vector<llvm::BasicBlock*>, std::vector<llvm::Value*>>& pairsValue, std::vector<llvm::SelectInst*>& selects,  llvm::Value* precSelect, llvm::BasicBlock* minPrec, llvm::DominatorTree& DT) {
+static void generateSelect(std::map<std::vector<llvm::BasicBlock*>, llvm::BasicBlock*>& commonDomMap, std::vector<llvm::SelectInst*>& selects, std::map<std::vector<llvm::BasicBlock*>, std::vector<llvm::Value*>>& pairsValue, llvm::DominatorTree& DT) {
 
-	auto temp = NULL;
+	std::map<llvm::BasicBlock*, llvm::SelectInst*> selectBasicBlock;
 
-	for(auto pair = map.begin(); pair != map.end(); ++pair) {
-		if(temp == NULL) temp = pair;
-		else {
-			llvm::DomTreeNodeBase<llvm::BasicBlock>* node1 = DT->getNode(temp->second);
-    		llvm::DomTreeNodeBase<llvm::BasicBlock>* node2 = DT->getNode(pair->second);
+	
+	while(!commonDomMap.empty())
+	{
+		auto temp = commonDomMap.begin();
+
+		for(auto pair = commonDomMap.begin(); pair != commonDomMap.end(); ++pair) {
+			llvm::DomTreeNodeBase<llvm::BasicBlock>* node1 = DT.getNode(temp->second);
+			llvm::DomTreeNodeBase<llvm::BasicBlock>* node2 = DT.getNode(pair->second);
 
 			if(node1 && node2){
-				if(DT->dominates(node1, node2)) temp = pair;
+				if(DT.dominates(node1, node2)) temp = pair;
 			}
 		}
+
+		llvm::BranchInst* br = cast<BranchInst>(temp->second->getTerminator());
+		auto values = pairsValue.find(temp->first);
+		
+		llvm::SelectInst* sel;
+		if(selectBasicBlock.find(temp->first[0]) == selectBasicBlock.end())
+		{
+			if(selectBasicBlock.find(temp->first[1]) == selectBasicBlock.end())
+			{
+
+				sel = llvm::SelectInst::Create(br->getCondition(), values->second[0], values->second[1]);
+				selects.push_back(sel);
+			}
+			else
+			{
+				auto v1 = selectBasicBlock.find(temp->first[1]);
+				sel = llvm::SelectInst::Create(br->getCondition(), values->second[0], v1->second);
+				selects.push_back(sel);
+				selectBasicBlock.erase(temp->first[1]);
+			}
+			selectBasicBlock.insert(std::make_pair(temp->first[0], sel));
+			selectBasicBlock.insert(std::make_pair(temp->first[1], sel));
+		
+		}
+		else
+		{
+			if(selectBasicBlock.find(temp->first[1]) == selectBasicBlock.end())
+			{
+				auto v0 = selectBasicBlock.find(temp->first[0]);
+				sel = llvm::SelectInst::Create(br->getCondition(), v0->second, values->second[1]);
+				selects.push_back(sel);
+				selectBasicBlock.erase(temp->first[0]);
+			
+			}
+			else
+			{
+				auto v0 = selectBasicBlock.find(temp->first[0]);
+				auto v1 = selectBasicBlock.find(temp->first[1]);
+				sel = llvm::SelectInst::Create(br->getCondition(), v0->second, v1->second);
+				selects.push_back(sel);
+				selectBasicBlock.erase(temp->first[0]);
+				selectBasicBlock.erase(temp->first[1]);
+			}
+			selectBasicBlock.insert(std::make_pair(temp->first[0], sel));
+			selectBasicBlock.insert(std::make_pair(temp->first[1], sel));
+		}
+
+		std::vector<std::vector<llvm::BasicBlock*>> pairToErase;
+		for(auto pair = commonDomMap.begin(); pair != commonDomMap.end(); ++pair) {
+			if(temp->second == pair->second) pairToErase.push_back(pair->first);
+		}
+
+		for(auto first : pairToErase)
+			commonDomMap.erase(first);
 	}
-
-	llvm::BranchInst* br = cast<BranchInst>(pair->second->getTerminator());
-	
-	if(precSelect == NULL) {
-		auto values = pairsValue.find(pair->first);
-
-		llvm::SelectInst* sel = llvm::SelectInst::Create(br->getCondition(), values->second[0], values->second[1]);
-		selects.push_back(sel);
-	}
-	else {
-
-	}
-	llvm::BranchInst* br = cast<BranchInst>(pair->second->getTerminator());
-	auto values = pairsValue.find(pair->first);
-
-	llvm::SelectInst* sel = llvm::SelectInst::Create(br->getCondition(), values->second[0], values->second[1]);
-	selects.push_back(sel);
-
-	llvm::Value* 
-
-	generateSelect(commonDomMap, )
-
 }
 
-static void modifyPhis(std::vector<llvm::PHINode> phis, Function &Func, llvm::DominatorTree& DT) {
+static void modifyPhis(std::vector<llvm::PHINode*> phis, Function &Func, llvm::DominatorTree& DT) {
 
 	IRBuilder<> builder (Func.getContext());
 
 	std::map<std::vector<llvm::BasicBlock*>, llvm::BasicBlock*> commonDomMap;
 	std::map<std::vector<llvm::BasicBlock*>, std::vector<llvm::Value*>> pairsValue;
-
+	std::vector<llvm::SelectInst*> selects;
 	for(auto phi : phis) {
 
 		commonDomMap.clear();
+		selects.clear();
 		unsigned numBlocks = phi->getNumIncomingValues();
 		for(unsigned i = 0; i < numBlocks - 1; i ++) {
 			for(unsigned j = i + 1; j < numBlocks; j++) {
-				llvm::DomTreeNodeBase<llvm::BasicBlock>* node1 = DT->getNode(phi->getIncomingBlock(i));
-    			llvm::DomTreeNodeBase<llvm::BasicBlock>* node2 = DT->getNode(phi->getIncomingBlock(j));
 
-				if (node1 && node2) {
-					llvm::DomTreeNodeBase<llvm::BasicBlock>* commonDominatorNode = DT->findNearestCommonDominator(node1, node2);
-					
-					if (commonDominatorNode) {
-						llvm::BasicBlock* commonDom = commonDominatorNode->getBlock();
-						std::vector<llvm::BasicBlock*> temp;
-						temp.push_back(phi->getIncomingBlock(i));
-						temp.push_back(phi->getIncomingBlock(j));
-						std::vector<llvm::Value*> values;
-						values.push_back(phi->getIncomingValue(i));
-						values.push_back(phi->getIncomingValue(j));
-						commonDomMap.insert(std::make_pair(temp, commonDom));
-						pairsValue.insert(std::make_pair(temp, values));
-					}
+				llvm::BasicBlock* commonDominatorNode = DT.findNearestCommonDominator(phi->getIncomingBlock(i), phi->getIncomingBlock(j));
+				
+				if (commonDominatorNode) {
+					std::vector<llvm::BasicBlock*> temp;
+					temp.push_back(phi->getIncomingBlock(i));
+					temp.push_back(phi->getIncomingBlock(j));
+					std::vector<llvm::Value*> values;
+					values.push_back(phi->getIncomingValue(i));
+					values.push_back(phi->getIncomingValue(j));
+					commonDomMap.insert(std::make_pair(temp, commonDominatorNode));
+					pairsValue.insert(std::make_pair(temp, values));
 				}
 			}
 		}
+
+		generateSelect(commonDomMap, selects,pairsValue, DT);
+
+		builder.SetInsertPoint(phi);
+		for(auto sel : selects)
+			builder.Insert(sel);
 		
+		phi->eraseFromParent();
 	}
 
 }
@@ -1013,14 +1051,14 @@ static void printInputsVectorResult(raw_ostream &OutS,
 
 	for(auto bb = Func.begin(); bb != Func.end(); ++bb) {
 
-		for(auto inst = bb.begin(); inst != bb.end(); ++inst) {
-				if(llvm::PHINode::class(&*inst)) {
+		for(auto inst = (*bb).begin(); inst != (*bb).end(); ++inst) {
+				if(llvm::PHINode::classof(&*inst)) {
 
 					llvm::PHINode* phi = cast<PHINode>(&*inst);
 					bool find = false;
 					for(auto block : phi->blocks()) {
 						for(auto loop : allLoopsVector) {
-							if(loop.isLoopLatch(&*bb)) {
+							if(loop->isLoopLatch(block)) {
 								find = true;
 								break;
 							}
@@ -1033,5 +1071,20 @@ static void printInputsVectorResult(raw_ostream &OutS,
 		}
 	}
 
-	if(!phis.empty) modifyPhis(phis, Func, DT);
+
+	if(!phis.empty()) modifyPhis(phis, Func, DT);
+
+	IRBuilder<> builder (Func.getContext());
+
+  	for(auto pair = serializedCode.begin(); pair != serializedCode.end(); ++pair) {
+
+		pair->first->getTerminator()->eraseFromParent();
+
+		builder.SetInsertPoint(pair->first);
+
+		if(pair->second.cond != NULL)
+			builder.CreateCondBr(pair->second.cond,pair->second.then,pair->second.els);
+		else		
+			builder.CreateBr(pair->second.then);
+	}
 }
