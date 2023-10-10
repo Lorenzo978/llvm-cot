@@ -162,6 +162,21 @@ static unsigned minSizeArrays(std::vector<llvm::GetElementPtrInst*> arraysLoop) 
 	return temp;
 }
 
+static llvm::Value* fixLoopCmp(llvm::BasicBlock* header, llvm::Value* oldValue) {
+
+	for(auto i = header->begin(); i != header->end(); ++i) {
+		if(llvm::PHINode::classof(&*i)) {
+			llvm::PHINode* p = cast<PHINode>(&*i); 
+		
+			for(unsigned k = 0; k < p->getNumIncomingValues(); k++) {
+				if(p->getIncomingValue(k) == oldValue) return p;
+			}
+		}
+	}
+
+	return oldValue;
+}
+
 static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func, std::vector<llvm::Loop*> allLoopsVector) {
 
 
@@ -203,7 +218,6 @@ static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func
 			if(!arraysLoop.empty()) {
 				unsigned maxSize = minSizeArrays(arraysLoop);
 
-				
 				std::map<llvm::BasicBlock*,std::vector<llvm::Value*>> applyBranchLS;
 				std::map<llvm::BasicBlock*,std::vector<llvm::Value*>> applyBranchCmp;
 				std::map<llvm::BasicBlock*,llvm::CmpInst::Predicate> applyBranchCmpPred;
@@ -215,6 +229,7 @@ static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func
 
 					for(auto index = array->idx_begin(); index != array->idx_end(); ++index) {
 
+						if(isa<Constant>((*index).get())) continue;
 						std::vector<llvm::Value*> UsersVector;
 						getAllUsers((*index).get(), UsersVector);
 
@@ -234,7 +249,9 @@ static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func
 								applyBranchCmpPred.insert(std::make_pair((*brB)->getParent(), cast<ICmpInst>((*brB)->getCondition())->getPredicate()));
 
 								for(auto temp : UsersVector) {
-									if(llvm::LoadInst::classof(temp) || llvm::StoreInst::classof(temp)) tempApplyBranchLS.push_back(temp);
+									if(llvm::LoadInst::classof(temp) || llvm::StoreInst::classof(temp)) {
+										tempApplyBranchLS.push_back(temp);
+									}
 								}
 								
 								applyBranchLS.insert(std::make_pair((*brB)->getParent(), tempApplyBranchLS));
@@ -313,8 +330,6 @@ static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func
 										}
 									}
 								}
-
-								applyBranchLS.insert(std::make_pair((*brB)->getParent(), tempApplyBranchLS));
 							}
 						}
 					}
@@ -327,13 +342,17 @@ static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func
 					llvm::BranchInst* br = cast<BranchInst>(pair->first->getTerminator());
 					llvm::Instruction* condbr = cast<Instruction>(br->getCondition());
 
-					builder.SetInsertPoint(condbr);
+					llvm::BasicBlock* header = loop->getHeader();
+					builder.SetInsertPoint(header->getFirstNonPHI());
 
-					llvm::Value* LHS = applyBranchCmp.find(pair->first)->second[0];
-					llvm::Value* RHS = applyBranchCmp.find(pair->first)->second[1];
+					llvm::Value* LHS = fixLoopCmp(header, applyBranchCmp.find(pair->first)->second[0]);
+
+					llvm::Value* RHS = fixLoopCmp(header, applyBranchCmp.find(pair->first)->second[1]);
 
 					llvm::CmpInst::Predicate Pred = applyBranchCmpPred.find(pair->first)->second;
+
 					llvm::ICmpInst* cmpInst = new llvm::ICmpInst(Pred, LHS, RHS, "");
+
 					llvm::Value* cmp = cast<Value>(cmpInst);
 
 					auto pinit = applyBranchInit.find(pair->first);
@@ -371,7 +390,7 @@ static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func
 					for(auto inst : pair->second) {
 						if(llvm::StoreInst::classof(inst)) {
 							llvm::StoreInst* store = cast<StoreInst>(inst); 
-							builder.SetInsertPoint(condbr);
+							builder.SetInsertPoint(store);
 							llvm::LoadInst* load = builder.CreateAlignedLoad(store->getValueOperand()->getType(), store->getPointerOperand(), store->getAlign(), store->isVolatile());
 							llvm::Value* sel = builder.CreateSelect(finalCmp, store->getValueOperand(), load);
 							builder.CreateAlignedStore(sel, store->getPointerOperand(), store->getAlign(), store->isVolatile());
@@ -429,7 +448,6 @@ static void modifyNumCyclesLoops(const ResultSecret &InputVector, Function &Func
 static void recursiveSerialization(llvm::BasicBlock* bb, std::map<llvm::BasicBlock*, newBranch>& serializedCode, std::vector<llvm::BranchInst*>& condBranch, std::vector<llvm::Loop*>& allLoopsVector, llvm::PostDominatorTree& PDT)
 {
 	llvm::Instruction* bbTerminator = bb->getTerminator();
-	//errs() << *bbTerminator << "\n";
 	if(serializedCode.find(bb) != serializedCode.end() || llvm::ReturnInst::classof(bbTerminator))
 	{
 		if(!condBranch.empty())
@@ -520,14 +538,13 @@ static void recursiveSerialization(llvm::BasicBlock* bb, std::map<llvm::BasicBlo
 
 				if(bbLoop != NULL)
 				{
-					llvm::SmallVector<llvm::BasicBlock*, 8> exitBlocks; 
-					bbLoop->getExitBlocks(exitBlocks);
 					newBranch newbr;
 						newbr.cond =  brTerminator->getCondition();
 						newbr.then = brTerminator->getSuccessor(0);
 						newbr.els = brTerminator->getSuccessor(1);
 					serializedCode.insert(std::make_pair(bb, newbr));
-					recursiveSerialization(exitBlocks[0], serializedCode, condBranch, allLoopsVector, PDT);
+					if(brTerminator->getSuccessor(0) == bbLoop->getHeader()) recursiveSerialization(brTerminator->getSuccessor(1), serializedCode, condBranch, allLoopsVector, PDT);
+					else recursiveSerialization(brTerminator->getSuccessor(0), serializedCode, condBranch, allLoopsVector, PDT);
 				}
 				else
 				{
@@ -639,6 +656,7 @@ static void modifyPhis(std::vector<llvm::PHINode*> phis, Function &Func, llvm::D
 
 		commonDomMap.clear();
 		selects.clear();
+		pairsValue.clear();
 		unsigned numBlocks = phi->getNumIncomingValues();
 		for(unsigned i = 0; i < numBlocks - 1; i ++) {
 			for(unsigned j = i + 1; j < numBlocks; j++) {
@@ -672,7 +690,10 @@ static void modifyPhis(std::vector<llvm::PHINode*> phis, Function &Func, llvm::D
 
 static void printInputsVectorResult(raw_ostream &OutS,
                                      const ResultSecret &InputVector, Function &Func) {
-										
+
+
+	errs() << Func.getName() << "\n =============================================== \n";
+
 	int i = 0;
 	for(auto bb = Func.begin(); bb != Func.end(); ++bb) {
 		std::string name = std::to_string(i);
@@ -682,6 +703,8 @@ static void printInputsVectorResult(raw_ostream &OutS,
 	llvm::DominatorTree DT (Func);
 	llvm::LoopInfo LI (DT);
 	llvm::PostDominatorTree PDT (Func);
+
+	PDT.print(OutS);
 
 	std::vector<llvm::BranchInst*> condBranch;
 	std::vector<llvm::Loop*> allLoopsVector;
@@ -695,7 +718,7 @@ static void printInputsVectorResult(raw_ostream &OutS,
 
   	/*for(auto pair = serializedCode.begin(); pair != serializedCode.end(); ++pair) {
 		errs() << "\n-------------------------------------------------------\n";
-		errs() << *(pair->first) << " -> ";
+		errs() << (pair->first)->getName() << " -> ";
 		if(pair->second.cond != NULL) errs() << "Branch: cond: (" << *(pair->second.cond) << ") \n";
 		if(pair->second.then != NULL) errs() << "Branch: then: (" << pair->second.then->getName() << ")\n";
 		if(pair->second.els != NULL) errs() << "Branch: else: (" << pair->second.els->getName() << ")\n";
