@@ -28,15 +28,18 @@ $LLVM_DIR/bin/clang -O1 -emit-llvm -c "../inputs/$1" -S -o "test.ll"
 $LLVM_DIR/bin/opt --passes=loop-simplify "test.ll" -S -o "test2.ll"
 
 # Step 3: Apply the second LLVM pass
-$LLVM_DIR/bin/opt -load-pass-plugin ./lib/libSecret.so --passes="print<inputsVector>" "test2.ll" -S -o "output.ll"
+$LLVM_DIR/bin/opt --passes=lowerswitch "test2.ll" -S -o "test3.ll"
 
-# Step 4: Generate object file
+# Step 4: Apply the third LLVM pass
+$LLVM_DIR/bin/opt -load-pass-plugin ./lib/libSecret.so --passes="print<inputsVector>" "test3.ll" -S -o "output.ll"
+
+# Step 5: Generate object file
 $LLVM_DIR/bin/llc -O0 -filetype=obj "output.ll" -o "output.o" -relocation-model=pic
 
-# Step 5: Generate asm in arm cortex x64
+# Step 6: Generate asm in arm cortex x64
 $LLVM_DIR/bin/llc -O0 -mtriple=armv7m-none-eabi -filetype=asm "output.ll" -o "output.s"
 
-# Step 6: Compile to an executable
+# Step 7: Compile to an executable
 gcc -O0 -o "${filename_without_extension}" "output.o" -pie
 
 
