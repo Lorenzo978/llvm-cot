@@ -16,7 +16,7 @@ In the `llvm-cot` main folder:
 cmake -DLT_LLVM_INSTALL_DIR=/usr/lib/llvm-16 ../
 ```
 ### Build Secret Pass and run a test
-In order to compile and run the pass on a particular test (all tests are in the `inputs` folder), execute in the `llvm-cot` main folder the following scripts:
+In order to compile the pass, apply it to a particular test (all tests are in the `inputs` folder) and execute it, use the following script in the `llvm-cot` main folder:
 ```bash
 ./compile.sh <testtorun.c>
 # Example with blowfish:
