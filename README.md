@@ -10,24 +10,20 @@ sudo apt-get install -y llvm-16 llvm-16-dev llvm-16-tools clang-16
 This will install all the required header files, libraries and tools in
 `/usr/lib/llvm-16/`.
 
-### Build
+### Build project
 In the `llvm-cot` main folder:
 ```bash
-cd build
 cmake -DLT_LLVM_INSTALL_DIR=/usr/lib/llvm-16 ../
-make
 ```
-### Generate test code and passes
-Always in `llvm-cot/build` folder:
+### Build Secret Pass and run a test
+In order to compile and run the pass on a particular test (all tests are in the `inputs` folder), execute in the `llvm-cot` main folder the following scripts:
 ```bash
-export LLVM_DIR=/usr/lib/llvm-16
-$LLVM_DIR/bin/clang -O1 -emit-llvm -c ../inputs/test.c -S -o test.ll
-$LLVM_DIR/bin/opt -load-pass-plugin ./lib/libSecret.so --passes="print<inputsVector>" -disable-output test.ll
-;or
-$LLVM_DIR/bin/opt -load-pass-plugin ./lib/libSecretNew.so --passes="print<inputsVector>" test.ll -S -o test2.ll
+./compile.sh <testtorun.c>
+# Example with blowfish:
+./compile.sh blowfish.c
 ```
-To compile the passes use `make` inside `build` directory.
-To generate assembly file for ARM Cortex M4:
-```bash
-$LLVM_DIR/bin/llc -O0 -mtriple=armv7m-none-eabi -filetype=asm test.ll -o output.s
-```
+This will automatically compile the pass, apply the correct transformations before our pass is executed and finally execute the generate program. In the build folder, after running the script the following files appear:
+- `output.ll`: IR code with our pass applied
+- `output.s`: Assembly file for ARM Cortex M4 architecture
+- `filename_exec`: executable
+The other `ll` files are the intermediate files needed before `output.ll` is generated.
