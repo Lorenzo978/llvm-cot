@@ -22,8 +22,9 @@ In order to compile the pass, apply it to a particular test (all tests are in th
 # Example with blowfish:
 ./compile.sh blowfish.c
 ```
-This will automatically compile the pass, apply the correct transformations before our pass is executed and finally execute the generate program. In the build folder, after running the script the following files appear:
+This will automatically compile the pass, apply the correct transformations before our pass is executed and finally execute the generate program. In the build folder, after running the script the following files will appear:
 - `output.ll`: IR code with our pass applied
 - `output.s`: Assembly file for ARM Cortex M4 architecture
 - `filename_exec`: executable
+
 The other `ll` files are the intermediate files needed before `output.ll` is generated.
